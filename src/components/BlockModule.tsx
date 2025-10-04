@@ -4,13 +4,13 @@ import Quiz from './Quiz'
 import { blockQuestions } from '../data/quizData'
 
 function BlockModule() {
-  const [activeTab, setActiveTab] = useState(null)
+  const [activeTab, setActiveTab] = useState<string | null>(null)
   const [number, setNumber] = useState('1')
   const [nonce, setNonce] = useState('0')
   const [data, setData] = useState('')
 
-  const difficultyMajor = 4
-  const difficultyMinor = 15
+  const difficultyMajor: number = 4
+  const difficultyMinor: number = 15
   let maximumNonce = 8
   let pattern = ''
   for (let x = 0; x < difficultyMajor; x++) {
@@ -24,8 +24,8 @@ function BlockModule() {
   else if (difficultyMinor <= 3) { maximumNonce *= 4 }
   else if (difficultyMinor <= 7) { maximumNonce *= 2 }
 
-  const getText = (num, no, dt) => `${num}${no}${dt}`
-  const calcHash = (txt) => CryptoJS.SHA256(txt).toString()
+  const getText = (num: string, no: string, dt: string) => `${num}${no}${dt}`
+  const calcHash = (txt: string) => CryptoJS.SHA256(txt).toString()
 
   const hash = useMemo(() => calcHash(getText(number, nonce, data)), [number, nonce, data])
   const isValid = hash.substr(0, patternLen) <= pattern
@@ -73,7 +73,7 @@ function BlockModule() {
       <div style={{ marginTop: 10 }}>
         <label>
           Dados:
-          <textarea value={data} onChange={(e) => setData(e.target.value)} placeholder="Digite os dados do bloco..." rows="4" cols="50" style={{ display: 'block', marginTop: 8 }} />
+          <textarea value={data} onChange={(e) => setData(e.target.value)} placeholder="Digite os dados do bloco..." rows={4} cols={50} style={{ display: 'block', marginTop: 8 }} />
         </label>
       </div>
 

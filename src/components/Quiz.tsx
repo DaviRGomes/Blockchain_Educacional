@@ -1,10 +1,10 @@
 import React, { useState } from 'react'
 
-function Quiz({ questions, title }) {
-  const [answers, setAnswers] = useState({})
+function Quiz({ questions, title }: any) {
+  const [answers, setAnswers] = useState<Record<number, string>>({})
   const [showResults, setShowResults] = useState(false)
 
-  const handleAnswerChange = (questionIndex, answer) => {
+  const handleAnswerChange = (questionIndex: number, answer: string) => {
     setAnswers({
       ...answers,
       [questionIndex]: answer
@@ -24,11 +24,11 @@ function Quiz({ questions, title }) {
     <div>
       <h3>{title}</h3>
       
-      {questions.map((question, index) => (
+      {questions.map((question: any, index: number) => (
         <div key={index} style={{ marginBottom: '20px' }}>
           <p><strong>{index + 1}. {question.question}</strong></p>
           
-          {question.options.map((option, optionIndex) => (
+          {question.options.map((option: any, optionIndex: number) => (
             <div key={optionIndex}>
               <label>
                 <input 
@@ -45,7 +45,7 @@ function Quiz({ questions, title }) {
           
           {showResults && (
             <div style={{ marginTop: '10px', padding: '10px', backgroundColor: answers[index] === question.correct ? '#d4edda' : '#f8d7da' }}>
-              {answers[index] === question.correct ? '✅ Correto!' : `❌ Errado. Resposta correta: ${question.options.find(opt => opt.value === question.correct)?.text}`}
+              {answers[index] === question.correct ? '✅ Correto!' : `❌ Errado. Resposta correta: ${question.options.find((opt: any) => opt.value === question.correct)?.text}`}
             </div>
           )}
         </div>

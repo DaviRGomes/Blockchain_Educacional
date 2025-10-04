@@ -1,24 +1,32 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import CryptoJS from 'crypto-js'
 import Quiz from './Quiz'
 import { blockchainQuestions } from '../data/quizData'
 
+type Block = {
+  index: number
+  number: number
+  nonce: number
+  data: string
+  previousHash: string
+  hash: string
+}
+
 function BlockchainModule() {
-  const [activeTab, setActiveTab] = useState(null)
+  const [activeTab, setActiveTab] = useState<string | null>(null)
 
   const difficulty = '0000'
   const maximumNonce = 200000
 
-  const makeHash = (number, previousHash, data, nonce) => {
+  const makeHash = (number: number, previousHash: string, data: string, nonce: number) => {
     const input = `${number}|${previousHash}|${data}|${nonce}`
     return CryptoJS.SHA256(input).toString()
   }
 
   const genesisPrevious = ''.padEnd(64, '0')
 
-  const [chain, setChain] = useState(() => {
-    // Cadeia inicial com 5 blocos
-    const initial = []
+  const [chain, setChain] = useState<Block[]>(() => {
+    const initial: Block[] = []
     for (let i = 0; i < 5; i++) {
       const prev = i === 0 ? genesisPrevious : ''
       initial.push({
@@ -30,7 +38,6 @@ function BlockchainModule() {
         hash: ''
       })
     }
-    // calcular hashes e previous
     for (let i = 0; i < initial.length; i++) {
       const prevHash = i === 0 ? genesisPrevious : initial[i - 1].hash
       initial[i].previousHash = prevHash
@@ -39,9 +46,9 @@ function BlockchainModule() {
     return initial
   })
 
-  const isValidHash = (hash) => hash.startsWith(difficulty)
+  const isValidHash = (hash: string) => hash.startsWith(difficulty)
 
-  const recomputeFrom = (startIndex, nextChain) => {
+  const recomputeFrom = (startIndex: number, nextChain?: Block[]) => {
     const updated = [...(nextChain ?? chain)]
     for (let i = startIndex; i < updated.length; i++) {
       const prevHash = i === 0 ? genesisPrevious : updated[i - 1].hash
@@ -51,17 +58,17 @@ function BlockchainModule() {
     setChain(updated)
   }
 
-  const handleFieldChange = (i, field, value) => {
+  const handleFieldChange = (i: number, field: 'number' | 'nonce' | 'data', value: string) => {
     const next = [...chain]
-    if (field === 'number' || field === 'nonce') {
-      next[i][field] = Number(value) || 0
+    if (field === 'data') {
+      next[i].data = value
     } else {
-      next[i][field] = value
+      next[i][field] = Number(value) || 0
     }
     recomputeFrom(i, next)
   }
 
-  const mineBlock = (i) => {
+  const mineBlock = (i: number) => {
     const next = [...chain]
     let nonce = next[i].nonce
     let attempts = 0
@@ -71,13 +78,12 @@ function BlockchainModule() {
       if (isValidHash(hash)) {
         next[i].nonce = nonce
         next[i].hash = hash
-        recomputeFrom(i + 1, next) // propaga para frente
+        recomputeFrom(i + 1, next)
         return
       }
       nonce++
       attempts++
     }
-    // se não achar dentro do limite, apenas atualiza com o último nonce
     next[i].nonce = nonce
     recomputeFrom(i, next)
   }

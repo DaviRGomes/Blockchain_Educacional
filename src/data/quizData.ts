@@ -1,4 +1,3 @@
-// Perguntas do módulo Hash
 export const hashQuestions = [
   {
     question: "Se eu mudar uma letra no texto, o hash:",
@@ -29,7 +28,6 @@ export const hashQuestions = [
   }
 ]
 
-// Aqui você pode adicionar perguntas de outros módulos
 export const blockQuestions = [
   {
     question: "O que é um bloco no blockchain?",
@@ -40,7 +38,6 @@ export const blockQuestions = [
     ],
     correct: "b"
   }
-  // ... mais perguntas
 ]
 
 export const blockchainQuestions = [
