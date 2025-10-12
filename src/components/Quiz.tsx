@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 
-function Quiz({ questions, title }: any) {
+function Quiz({ questions, title, onFinish }: any) {
   const [answers, setAnswers] = useState<Record<number, string>>({})
   const [showResults, setShowResults] = useState(false)
 
@@ -19,6 +19,8 @@ function Quiz({ questions, title }: any) {
     setAnswers({})
     setShowResults(false)
   }
+
+  const correctCount = Object.values(answers).filter((answer, index) => answer === questions[index]?.correct).length
 
   return (
     <div>
@@ -55,7 +57,12 @@ function Quiz({ questions, title }: any) {
         {!showResults ? (
           <button onClick={checkAnswers}>Verificar Respostas</button>
         ) : (
-          <button onClick={resetQuiz}>Tentar Novamente</button>
+          <div style={{ display: 'flex', gap: 8 }}>
+            <button onClick={resetQuiz}>Tentar Novamente</button>
+            {typeof onFinish === 'function' && (
+              <button onClick={() => onFinish(correctCount, questions.length)}>Concluir</button>
+            )}
+          </div>
         )}
       </div>
       

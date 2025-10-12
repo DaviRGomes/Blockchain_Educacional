@@ -102,7 +102,17 @@ function BlockchainModule() {
   )
 
   const renderQuiz = () => (
-    <Quiz title="Quiz: Blockchain" questions={blockchainQuestions} />
+    <Quiz
+      title="Quiz: Blockchain"
+      questions={blockchainQuestions}
+      onFinish={(score: number, total: number) => {
+        try {
+          localStorage.setItem('blockchainCompleted', 'true')
+          localStorage.setItem('blockchainScore', String(score))
+          localStorage.setItem('blockchainTotal', String(total))
+        } catch {}
+      }}
+    />
   )
 
   const renderPratica = () => (

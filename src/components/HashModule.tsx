@@ -20,7 +20,19 @@ function HashModule() {
     </div>
   )
 
-  const renderQuiz = () => <Quiz questions={hashQuestions} title="Quiz - Hash" />
+  const renderQuiz = () => (
+    <Quiz
+      questions={hashQuestions}
+      title="Quiz - Hash"
+      onFinish={(score: number, total: number) => {
+        try {
+          localStorage.setItem('hashCompleted', 'true')
+          localStorage.setItem('hashScore', String(score))
+          localStorage.setItem('hashTotal', String(total))
+        } catch {}
+      }}
+    />
+  )
 
   const renderPratica = () => (
     <div>

@@ -52,7 +52,17 @@ function BlockModule() {
   )
 
   const renderQuiz = () => (
-    <Quiz questions={blockQuestions} title="Quiz - Blocos" />
+    <Quiz
+      questions={blockQuestions}
+      title="Quiz - Blocos"
+      onFinish={(score: number, total: number) => {
+        try {
+          localStorage.setItem('blockCompleted', 'true')
+          localStorage.setItem('blockScore', String(score))
+          localStorage.setItem('blockTotal', String(total))
+        } catch {}
+      }}
+    />
   )
 
   const renderPratica = () => (
