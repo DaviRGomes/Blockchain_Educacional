@@ -1,0 +1,70 @@
+.container {
+  max-width: 800px;
+  margin: 2rem auto;
+  background-color: var(--color-card);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 2rem 3rem;
+  transition: var(--transition);
+}
+
+/* Evita centralizar tudo dentro do quiz */
+.quizBox {
+  border-top: 2px solid var(--color-primary);
+  padding-top: 1.5rem;
+  text-align: left;
+}
+
+/* Cabeçalho */
+.title {
+  font-size: 2rem;
+  color: var(--color-primary);
+  margin-bottom: 0.5rem;
+  text-align: center;
+}
+
+.subtitle {
+  color: #64748b;
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+/* Perguntas do quiz */
+.quizBox h3 {
+  margin-top: 1.5rem;
+  color: #1e293b;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.quizBox label {
+  display: block;
+  margin: 0.4rem 0;
+  padding: 0.4rem 0.6rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.quizBox label:hover {
+  background-color: rgba(37, 99, 235, 0.1);
+}
+
+/* Botão */
+.button {
+  background-color: var(--color-primary);
+  color: white;
+  border: none;
+  border-radius: var(--radius);
+  padding: 0.7rem 1.4rem;
+  cursor: pointer;
+  font-weight: 600;
+  transition: var(--transition);
+  margin-top: 1.5rem;
+  display: inline-block;
+}
+
+.button:hover {
+  background-color: #2563eb;
+  transform: translateY(-1px);
+}

@@ -4,8 +4,9 @@ import BlockModule from './components/BlockModule'
 import BlockchainModule from './components/BlockchainModule'
 import { Routes, Route } from 'react-router-dom'
 import ModulesList from './components/ModulesList/ModulesList'
-import IntroQuiz from './components/IntroQuiz'
+import IntroQuiz from './components/IntroQuiz/IntroQuiz'
 import FinalQuiz from './components/FinalQuiz'
+import './styles/global.css';
 
 function App() {
   return (

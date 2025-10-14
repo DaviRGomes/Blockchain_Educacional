@@ -1,0 +1,18 @@
+:root {
+  --color-primary: #3b82f6;
+  --color-secondary: #10b981;
+  --color-bg: #f4f6f8;
+  --color-card: #ffffff;
+  --color-text: #1e293b;
+  --radius: 12px;
+  --shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+  --transition: 0.2s ease;
+}
+
+body {
+  font-family: 'Poppins', sans-serif;
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  margin: 0;
+  padding: 0;
+}
