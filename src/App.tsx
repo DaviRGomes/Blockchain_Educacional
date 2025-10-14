@@ -6,6 +6,7 @@ import { Routes, Route } from 'react-router-dom'
 import ModulesList from './components/ModulesList'
 import IntroQuiz from './components/IntroQuiz'
 import FinalQuiz from './components/FinalQuiz'
+import './index.css';
 
 function App() {
   return (

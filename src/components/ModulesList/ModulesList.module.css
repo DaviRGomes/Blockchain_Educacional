@@ -1,0 +1,50 @@
+.container {
+  padding: 1rem;
+}
+
+.title {
+  font-size: 1.8rem;
+  color: #222;
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1rem;
+}
+
+.card {
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 1rem;
+  background-color: #f9f9f9;
+  transition: transform 0.2s;
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.link {
+  display: inline-block;
+  margin-top: 0.5rem;
+  color: white;
+  background-color: #007bff;
+  padding: 0.4rem 0.8rem;
+  border-radius: 4px;
+  text-decoration: none;
+}
+
+.link:hover {
+  background-color: #0056b3;
+}
+
+.locked {
+  color: #888;
+  font-style: italic;
+  display: block;
+  margin-top: 0.5rem;
+}
