@@ -6,8 +6,20 @@ import { Routes, Route } from 'react-router-dom'
 import ModulesList from './components/ModulesList'
 import IntroQuiz from './components/IntroQuiz'
 import FinalQuiz from './components/FinalQuiz'
+import Onboarding from './components/Onboarding'
+import { useState, useEffect } from 'react'
 
 function App() {
+  const [showOnboarding, setShowOnboarding] = useState(false)
+
+  useEffect(() => {
+    try {
+      const done = localStorage.getItem('onboardingCompleted') === 'true'
+      setShowOnboarding(!done)
+    } catch {
+      setShowOnboarding(true)
+    }
+  }, [])
   return (
     <div>
       <h1>Blockchain Educacional</h1>
@@ -19,6 +31,8 @@ function App() {
         <Route path="/blockchain" element={<BlockchainModule />} />
         <Route path="/final-quiz" element={<FinalQuiz />} />
       </Routes>
+
+  {showOnboarding && <Onboarding onFinish={() => setShowOnboarding(false)} />}
     </div>
   )
 }
