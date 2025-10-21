@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import CryptoJS from 'crypto-js'
 
 type TooltipPos = { top: number; left: number; placement: 'top' | 'right' | 'bottom' | 'left' }
@@ -133,6 +134,24 @@ function HashModule() {
   }
 
   const tooltip = renderTooltipContent()
+
+  // navigation: when tutorial completes (step 7), mark completion and navigate to /block
+  const navigate = useNavigate()
+  useEffect(() => {
+    if (step === 7) {
+      try {
+        localStorage.setItem('hashCompleted', 'true')
+      } catch (e) {
+        // ignore localStorage errors
+      }
+      const id = window.setTimeout(() => {
+        navigate('/block')
+      }, 3000)
+      pushTimeout(id)
+      return () => clearTimeout(id)
+    }
+    return
+  }, [step, navigate])
 
   return (
     <div style={{ display: 'flex', justifyContent: 'center', padding: 24 }}>
