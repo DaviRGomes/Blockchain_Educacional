@@ -1,7 +1,11 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Quiz from './Quiz'
-import { hashQuestions, blockQuestions, blockchainQuestions } from '../data/quizData'
+import { hashQuestions } from '../data/quizHash'
+import { blockchainQuestions } from '../data/quizBlockchain'
+import { blockQuestions } from '../data/quizBlock'
+
+
 
 type Result = {
   score: number

@@ -30,6 +30,13 @@ function ModulesList() {
   return (
     <div>
       <h2>Módulos</h2>
+
+      <div className="module-card" style={{ border: '1px solid #ccc', padding: 16, marginBottom: 16 }}>
+        <h3>Quiz Inicial</h3>
+        <p>Teste seus conhecimentos antes de iniciar os estudos.</p>
+        <Link to="/intro-quiz">Fazer Quiz Inicial</Link>
+      </div>
+
       <div style={{ display: 'grid', gap: 16 }}>
         <div ref={hashRef} className={`module-card ${activeHighlight === 'hash' ? 'highlight' : ''}`} style={{ border: '1px solid #ccc', padding: 16 }}>
           <h3>Módulo 1: Hash</h3>

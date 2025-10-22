@@ -68,7 +68,7 @@ function Onboarding({ onFinish }: Props) {
     } catch {}
     // hide the onboarding in the parent then navigate to hash
     try { onFinish && onFinish() } catch {}
-    navigate('/hash')
+    navigate('/')
   }
 
   const step = steps[index]

@@ -143,12 +143,13 @@
 }
 
 .guided-tooltip-card{
-  background: var(--card);
+  background: var(--card, #ffffff);
   color: #071129;
   padding: 12px 14px;
   border-radius: 10px;
   box-shadow: 0 8px 28px rgba(2,6,23,0.18);
   max-width: 320px;
+  border: 1px solid #e5e7eb; /* Adicionar borda para melhor visibilidade */
 }
 
 .guided-tooltip-card h4{
@@ -158,7 +159,7 @@
 
 .guided-tooltip-card p{
   margin: 0;
-  color: var(--muted);
+  color: var(--muted, #6b7280);
   font-size: 0.95rem;
   line-height: 1.35;
 }
@@ -191,3 +192,15 @@
 
 /* ensure tooltip sits above content and not overlapping due to pointer-events disabled */
 .guided-tooltip-card, .guided-tooltip-arrow{ pointer-events: auto }
+
+/* Garantir visibilidade do tooltip */
+.guided-tooltip {
+  z-index: 10000 !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+.guided-tooltip-card {
+  display: block !important;
+  visibility: visible !important;
+}

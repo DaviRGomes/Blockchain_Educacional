@@ -10,22 +10,19 @@ import Onboarding from './components/Onboarding'
 import { useState, useEffect } from 'react'
 
 function App() {
-  const [showOnboarding, setShowOnboarding] = useState(false)
+  const [showOnboarding, setShowOnboarding] = useState(true)
 
   useEffect(() => {
-    try {
-      const done = localStorage.getItem('onboardingCompleted') === 'true'
-      setShowOnboarding(!done)
-    } catch {
-      setShowOnboarding(true)
-    }
+    // Sempre mostra no carregamento inicial
+    setShowOnboarding(true)
   }, [])
   return (
     <div>
       <h1>Blockchain Educacional</h1>
       <Routes>
-        <Route path="/" element={<IntroQuiz />} />
+        <Route path="/" element={<ModulesList />} />
         <Route path="/modules" element={<ModulesList />} />
+        <Route path="/intro-quiz" element={<IntroQuiz />} />
         <Route path="/hash" element={<HashModule />} />
         <Route path="/block" element={<BlockModule />} />
         <Route path="/blockchain" element={<BlockchainModule />} />

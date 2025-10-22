@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import CryptoJS from 'crypto-js'
 import Quiz from './Quiz'
-import { blockchainQuestions } from '../data/quizData'
+import { blockchainQuestions } from '../data/quizBlockchain'
 
 type Block = {
   index: number

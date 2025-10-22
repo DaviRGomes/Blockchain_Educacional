@@ -1,7 +1,7 @@
 import React, { useMemo, useState, useRef, useEffect } from 'react'
 import CryptoJS from 'crypto-js'
 import Quiz from './Quiz'
-import { blockQuestions } from '../data/quizData'
+import { blockQuestions } from '../data/quizBlock'
 import { useNavigate } from 'react-router-dom'
 
 function BlockModule() {
@@ -280,10 +280,8 @@ function BlockModule() {
   // navigate to blockchain when practice finishes (after final step)
   useEffect(() => {
     if (step === 9) {
-      try { localStorage.setItem('blockCompleted', 'true') } catch (e) {}
-      const id = window.setTimeout(() => navigate('/blockchain'), 1200)
-      pushTimeout(id)
-      return () => clearTimeout(id)
+      // Removido timeout de navegação automática; segue o modelo do onboarding via botão
+      // Opcional: marcar conclusão aqui ou apenas no clique do botão (preferível no clique)
     }
   }, [step, navigate])
 
@@ -311,6 +309,21 @@ function BlockModule() {
           <div className="guided-tooltip-card">
             <h4>{tooltip.title}</h4>
             <p style={{ whiteSpace: 'pre-wrap' }}>{tooltip.text}</p>
+            {/* Botão de ação no passo final, seguindo o modelo do onboarding */}
+            {step === 9 && (
+              <div style={{ marginTop: 8 }}>
+                <button
+                  className="btn btn-primary"
+                  onClick={() => {
+                    try { localStorage.setItem('blockCompleted', 'true') } catch {}
+                    navigate('/blockchain')
+                  }}
+                  style={{ pointerEvents: 'auto' }}
+                >
+                  Ir para o próximo módulo
+                </button>
+              </div>
+            )}
           </div>
           <div className="guided-tooltip-arrow" />
         </div>
