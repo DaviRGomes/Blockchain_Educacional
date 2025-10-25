@@ -8,9 +8,11 @@ import IntroQuiz from './components/IntroQuiz'
 import FinalQuiz from './components/FinalQuiz'
 import Onboarding from './components/Onboarding'
 import { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 
 function App() {
   const [showOnboarding, setShowOnboarding] = useState(true)
+  const navigate = useNavigate()
 
   useEffect(() => {
     // Sempre mostra no carregamento inicial
@@ -29,7 +31,8 @@ function App() {
         <Route path="/final-quiz" element={<FinalQuiz />} />
       </Routes>
 
-  {showOnboarding && <Onboarding onFinish={() => setShowOnboarding(false)} />}
+  {showOnboarding && <Onboarding onFinish={() => {setShowOnboarding(false)
+     navigate('/')}} />}
     </div>
   )
 }

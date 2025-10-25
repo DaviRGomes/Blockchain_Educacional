@@ -8,6 +8,7 @@ import { HashTourSteps, TourStepContent } from '../data/tourSteps'
 // Certifique-se de que este componente Quiz está usando as perguntas corretamente
 import { hashQuestions } from '../data/quizHash'
 import './styles/onboarding.css' // garante estilos do tooltip
+import Onboarding from './Onboarding'
 
 
 function HashModule() {
@@ -21,6 +22,7 @@ function HashModule() {
   const hashRef = useRef<HTMLInputElement | null>(null)
 
   const [tooltipPos, setTooltipPos] = useState<TooltipPos | null>(null)
+  const [showModuleOnboarding, setShowModuleOnboarding] = useState(false)
   const navigate = useNavigate()
   
   const computeHash = (txt: string) => CryptoJS.SHA256(txt).toString()
@@ -101,6 +103,10 @@ function HashModule() {
     }
   }, [activeTab])
 
+ useEffect(() => {
+  setShowModuleOnboarding(true)
+}, [])
+
   // 4. Handlers (Lógica de Avanço do Tour)
   const handleTextChange = (v: string) => {
     const prev = text
@@ -180,6 +186,96 @@ useEffect(() => {
     <div style={{ display: 'flex', justifyContent: 'center', padding: 24 }}>
       <div style={{ width: '100%', maxWidth: 820 }}>
         <h2 style={{ textAlign: 'center' }}>Módulo 1: Hash</h2>
+        {/* Module-specific onboarding (rich theory) */}
+        {showModuleOnboarding && (
+          <Onboarding
+            onFinish={() => {
+              try { localStorage.setItem('hashModuleOnboarding', 'true') } catch {}
+              setShowModuleOnboarding(false)
+              setActiveTab('quiz')
+            }}
+            steps={[
+              {
+                title: 'O que é uma Função Hash?',
+                content: (
+                  <div>
+                    <p>
+                      Uma função hash é um algoritmo que mapeia dados de tamanho arbitrário para um valor de tamanho fixo — o hash. Exemplo comum: SHA-256 gera 256 bits (64 chars em hex).
+                    </p>
+                    <p>
+                      Propriedades importantes:
+                    </p>
+                    <ul>
+                      <li><strong>Determinismo</strong>: o mesmo input sempre produz o mesmo hash.</li>
+                      <li><strong>Unidirecionalidade</strong>: não é viável (na prática) inverter o hash para recuperar o input.</li>
+                      <li><strong>Efeito Avalanche</strong>: pequenas alterações no input resultam em alterações completamente diferentes no hash.</li>
+                      <li><strong>Tamanho fixo</strong>: independentemente do tamanho do input, o hash tem tamanho constante.</li>
+                    </ul>
+                  </div>
+                )
+              },
+              {
+                title: 'Por que Hash é útil na Blockchain?',
+                content: (
+                  <div>
+                    <p>
+                      Em uma blockchain, o hash funciona como uma "impressão digital" de blocos e transações. Ele garante integridade: qualquer alteração nos dados altera o hash e quebra a cadeia.
+                    </p>
+                    <p>
+                      Em blocos, normalmente usamos o hash do bloco anterior (previousHash) para ligar blocos. Assim, alterar um bloco exige recalcular todos os blocos subsequentes.
+                    </p>
+                  </div>
+                )
+              },
+              {
+                title: 'Segurança: colisões e força bruta',
+                content: (
+                  <div>
+                    <p>
+                      Uma <em>colisão</em> é quando dois inputs diferentes produzem o mesmo hash. Algoritmos modernos (SHA-256) são projetados para reduzir ao máximo a chance de colisões.
+                    </p>
+                    <p>
+                      Ataques possíveis:
+                    </p>
+                    <ul>
+                      <li><strong>Força bruta</strong>: tentar inputs até encontrar um hash alvo (cara a cara com a dificuldade de mineração).</li>
+                      <li><strong>Criptoanálise</strong>: técnicas teóricas para explorar propriedades fracas de uma função hash — raras em SHA-256.</li>
+                    </ul>
+                    <p>
+                      Por isso, blockchains usam funções fortes (SHA-256) e parâmetros de dificuldade para tornar a prova de trabalho custosa.
+                    </p>
+                  </div>
+                )
+              },
+              {
+                title: 'Representação prática',
+                content: (
+                  <div>
+                    <p>
+                      No painel de prática deste módulo você pode digitar texto e gerar o SHA-256. Experimente pequenas mudanças e veja o efeito avalanche.
+                    </p>
+                    <p>
+                      Exemplo curto: "hello" → hash A; "hello!" → hash B totalmente diferente.
+                    </p>
+                  </div>
+                )
+              },
+              {
+                title: 'Boas práticas',
+                content: (
+                  <div>
+                    <p>
+                      Importante: hashes não são criptografia de dados sensíveis (sem salt/pepper). Para armazenamento de senhas, use funções KDF (bcrypt, scrypt, Argon2) com salt.
+                    </p>
+                    <p>
+                      Para integridade e encadeamento, hashes puros (SHA-256) são apropriados e usados amplamente em blockchains.
+                    </p>
+                  </div>
+                )
+              }
+            ]}
+          />
+        )}
 
         {/* BOTOES TEORIA | QUIZ | PRÁTICA */}
         <div style={{ marginBottom: 16 }}>
@@ -207,16 +303,7 @@ useEffect(() => {
         {/* CONTEÚDO DA ABA TEORIA */}
         {activeTab === 'teoria' && (
           <div>
-            <h3>Teoria - Hash</h3>
-            <p>
-              Funções hash (ex: SHA256) geram uma “impressão digital” de dados. São determinísticas, de sentido único
-              e apresentam o efeito avalanche: pequenas mudanças no input causam grandes mudanças no output.
-            </p>
-            <ul>
-              <li>Determinismo: mesmo input → mesmo hash.</li>
-              <li>Unidirecionalidade: não é possível recuperar o input a partir do hash.</li>
-              <li>Efeito avalanche: pequenas mudanças causam hashes totalmente diferentes.</li>
-            </ul>
+            
           </div>
         )}
 

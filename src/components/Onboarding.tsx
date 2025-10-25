@@ -2,20 +2,22 @@ import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import './styles/onboarding.css'
 
-type Step = {
+export type Step = {
   title: string
   content: React.ReactNode
 }
 
 type Props = {
   onFinish?: () => void
+  steps?: Step[]
+  initialIndex?: number
 }
 
-function Onboarding({ onFinish }: Props) {
+function Onboarding({ onFinish, steps: customSteps, initialIndex = 0 }: Props) {
   const navigate = useNavigate()
-  const [index, setIndex] = useState(0)
+  const [index, setIndex] = useState(initialIndex)
 
-  const steps: Step[] = [
+  const defaultSteps: Step[] = [
     {
       title: 'Bem-vindo',
       content: (
@@ -54,6 +56,8 @@ function Onboarding({ onFinish }: Props) {
     }
   ]
 
+  const steps = customSteps ?? defaultSteps
+
   const goNext = () => {
     if (index < steps.length - 1) {
       setIndex(index + 1)
@@ -63,13 +67,9 @@ function Onboarding({ onFinish }: Props) {
   }
 
   const finish = () => {
-    try {
-      localStorage.setItem('onboardingCompleted', 'true')
-    } catch {}
-    // hide the onboarding in the parent then navigate to hash
-    try { onFinish && onFinish() } catch {}
-    navigate('/')
-  }
+  try { onFinish && onFinish() } catch {}
+}
+
 
   const step = steps[index]
 
