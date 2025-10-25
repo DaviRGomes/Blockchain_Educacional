@@ -158,27 +158,15 @@ function HashModule() {
   // 7. Inicia o tutorial somente ao entrar na aba Prática (Lógica correta)
   // 7. Inicia o tutorial somente ao entrar na aba Prática
 useEffect(() => {
-  // Se a aba não for 'pratica', simplesmente ignora
-  if (activeTab !== 'pratica') {
-    // É crucial que o step seja resetado por outro useEffect (o que você já tem)
-    return;
-  }
-  
-  // Agora estamos na aba 'pratica'. Se o tour ainda não começou (step == null), iniciamos.
+  // Se a aba não for 'pratica', ignora
+  if (activeTab !== 'pratica') return
+
+  // Ao entrar em prática, sempre inicia o tour se ainda não começou
   if (step === null) {
-    console.log('Iniciando tour: activeTab é pratica e step é null'); 
-    try {
-      const completed = localStorage.getItem('hashCompleted') === 'true';
-      if (!completed) {
-        // Usamos setTimeout para garantir que o DOM esteja renderizado antes de calcular a posição do tooltip.
-        window.requestAnimationFrame(() => setTimeout(() => setStep(1), 50));
-      }
-    } catch {
-      window.requestAnimationFrame(() => setTimeout(() => setStep(1), 50));
-    }
+    window.requestAnimationFrame(() => setTimeout(() => setStep(1), 50))
   }
-  
-  }, [activeTab, step]); // Dependências ok.
+
+}, [activeTab, step])
 
 
   // 8. Renderização Principal (Teoria | Quiz | Prática)

@@ -3,9 +3,12 @@ import CryptoJS from 'crypto-js'
 import Quiz from './Quiz'
 import { blockQuestions } from '../data/quizBlock'
 import { useNavigate } from 'react-router-dom'
+import Onboarding from './Onboarding'
+import GuidedTooltip from './GuidedTooltip'
 
 function BlockModule() {
   const [activeTab, setActiveTab] = useState<string>('teoria')
+  const [showModuleOnboarding, setShowModuleOnboarding] = useState(false)
   const [number, setNumber] = useState('1')
   const [nonce, setNonce] = useState('0')
   const [data, setData] = useState('')
@@ -28,18 +31,21 @@ function BlockModule() {
   // Start the guided tour only when the user navigates to the practice tab
   useEffect(() => {
     if (activeTab === 'pratica' && step == null) {
-      try {
-        const completed = localStorage.getItem('blockCompleted') === 'true'
-        if (!completed) {
-          // start the guided tour after next paint so elements mount
-          window.requestAnimationFrame(() => setTimeout(() => setStep(1), 50))
-        }
-      } catch (e) {
-        // ignore localStorage errors
-        window.requestAnimationFrame(() => setTimeout(() => setStep(1), 50))
-      }
+      // start the guided tour after next paint so elements mount
+      window.requestAnimationFrame(() => setTimeout(() => setStep(1), 50))
     }
   }, [activeTab, step])
+
+  // show module-specific onboarding when the component mounts if not already completed
+  useEffect(() => {
+    try {
+      const completed = localStorage.getItem('blockModuleOnboarding') === 'true'
+  // always show onboarding when entering module
+  setShowModuleOnboarding(true)
+    } catch {
+  setShowModuleOnboarding(true)
+    }
+  }, [])
 
   const difficultyMajor: number = 4
   const difficultyMinor: number = 15
@@ -122,22 +128,6 @@ function BlockModule() {
 
   const renderTeoria = () => (
     <div>
-      <h3>Teoria - Bloco</h3>
-      <p>
-        Um bloco é a unidade básica de uma blockchain. Cada bloco contém informações como o número do bloco,
-        um campo chamado <strong>nonce</strong> (usado para mineração) e os dados/payload. O hash do bloco é
-        obtido aplicando SHA256 sobre o conteúdo do bloco (número + nonce + dados).
-      </p>
-      <p>
-        O hash de um bloco é exatamente a mesma função que vimos no módulo anterior —
-        SHA256. A diferença é que, aqui, nós ajustamos o <em>nonce</em> até encontrar um hash que satisfaça uma dificuldade
-        (um prefixo alvo). Esse processo é a mineração.
-      </p>
-      <ul>
-        <li>Conteúdo do bloco: Número, Nonce e Dados.</li>
-        <li>Hash do bloco: SHA256(conteúdo).</li>
-        <li>Mineração: variar o Nonce até que o hash atenda a dificuldade alvo.</li>
-      </ul>
     </div>
   )
 
@@ -288,10 +278,90 @@ function BlockModule() {
   return (
     <div style={{ position: 'relative' }}>
       <h2>Módulo 2: Bloco</h2>
+      {showModuleOnboarding && (
+        <Onboarding
+          onFinish={() => {
+            try { localStorage.setItem('blockModuleOnboarding', 'true') } catch {}
+            setShowModuleOnboarding(false)
+            setActiveTab('quiz')
+          }}
+          steps={[
+            {
+              title: 'O que é um Bloco?',
+              content: (
+                <div>
+                  <p>
+                    Um bloco é a unidade que agrupa transações e metadados: número, nonce, dados e o hash (resultado da função hash sobre esses campos).
+                  </p>
+                  <p>
+                    Cada bloco aponta para o hash do bloco anterior (previousHash). Esse link cria uma cadeia onde o histórico fica encadeado e fácil de verificar.
+                  </p>
+                  <p>
+                    Exemplo simplificado: Bloco #2 contém previousHash = hash(Bloco #1). Se Bloco #1 mudar, Bloco #2 fica inconsistente.
+                  </p>
+                </div>
+              )
+            },
+            {
+              title: 'Nonce e Mineração',
+              content: (
+                <div>
+                  <p>
+                    O <strong>nonce</strong> é um valor que ajustamos para mudar o hash do bloco. Mineração é o processo de tentar nonces até encontrar um hash que satisfaça a dificuldade.
+                  </p>
+                  <p>
+                    Em sistemas reais, a dificuldade é ajustada para controlar o tempo médio de criação de blocos; aqui usamos um critério simples para demonstração.
+                  </p>
+                </div>
+              )
+            },
+            {
+              title: 'Efeito Avalanche e Integridade',
+              content: (
+                <div>
+                  <p>
+                    Alterar qualquer campo (dados, nonce ou número) muda o hash completamente (efeito avalanche). Por isso, alterar um bloco invalida os seguintes — a cadeia perde consistência.
+                  </p>
+                  <p>
+                    Para recuperar a consistência após uma alteração é necessário reminerar o bloco alterado e todos os subsequentes, o que torna ataques retroativos custosos.
+                  </p>
+                </div>
+              )
+            },
+            {
+              title: 'Limitações e Performance',
+              content: (
+                <div>
+                  <p>
+                    A mineração é computacionalmente custosa. Neste módulo usamos uma simulação síncrona para demonstração; em sistemas reais, isso é feito por nós dedicados, pools e hardware especializado (ASICs/GPU).
+                  </p>
+                  <p>
+                    Observação técnica: executar loops de força bruta no thread principal do navegador pode travar a interface; por isso, para provar conceitos maiores, use WebWorkers ou execute mineração em backend controlado.
+                  </p>
+                </div>
+              )
+            },
+            {
+              title: 'Prática Recomendada',
+              content: (
+                <div>
+                  <p>
+                    Experimente alterar os dados do bloco e clicar em "Minerar" para ver como o nonce e o hash mudam. Observe a validade do bloco e como isso afeta os blocos seguintes.
+                  </p>
+                  <p>
+                    Dica: altere apenas uma palavra e compare os hashes antes/depois — será visível a mudança completa (efeito avalanche).
+                  </p>
+                </div>
+              )
+            }
+          ]}
+        />
+      )}
       <div>
         <button onClick={() => setActiveTab('teoria')}>Teoria</button>
         <button onClick={() => setActiveTab('quiz')}>Quiz</button>
         <button onClick={() => setActiveTab('pratica')}>Prática</button>
+  
       </div>
       <hr />
       <div>
@@ -300,33 +370,17 @@ function BlockModule() {
         {activeTab === 'pratica' && renderPratica()}
       </div>
 
-      {/* render guided tooltip like HashModule */}
+      {/* render guided tooltip via GuidedTooltip component */}
       {tooltipPos && tooltip && (
-        <div
-          className={`guided-tooltip placement-${tooltipPos.placement}`}
-          style={{ position: 'absolute', top: tooltipPos.top + 'px', left: tooltipPos.left + 'px', transform: tooltipPos.placement === 'top' ? 'translate(-50%, -110%)' : 'translate(0, -50%)', pointerEvents: 'none' }}
-        >
-          <div className="guided-tooltip-card">
-            <h4>{tooltip.title}</h4>
-            <p style={{ whiteSpace: 'pre-wrap' }}>{tooltip.text}</p>
-            {/* Botão de ação no passo final, seguindo o modelo do onboarding */}
-            {step === 9 && (
-              <div style={{ marginTop: 8 }}>
-                <button
-                  className="btn btn-primary"
-                  onClick={() => {
-                    try { localStorage.setItem('blockCompleted', 'true') } catch {}
-                    navigate('/blockchain')
-                  }}
-                  style={{ pointerEvents: 'auto' }}
-                >
-                  Ir para o próximo módulo
-                </button>
-              </div>
-            )}
-          </div>
-          <div className="guided-tooltip-arrow" />
-        </div>
+        <GuidedTooltip
+          content={tooltip}
+          pos={tooltipPos}
+          actionLabel={step === 9 ? 'Ir para o próximo módulo' : undefined}
+          onAction={step === 9 ? () => {
+            try { localStorage.setItem('blockCompleted', 'true') } catch {}
+            navigate('/blockchain')
+          } : undefined}
+        />
       )}
     </div>
   )

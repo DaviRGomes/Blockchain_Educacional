@@ -34,4 +34,4 @@ export const HashTourSteps: { [key: number]: TourStepContent } = {
   }
 };
 
-// export const BlockTourSteps = { /* ... */ };
+export const BlockTourSteps = { /* ... */ };
