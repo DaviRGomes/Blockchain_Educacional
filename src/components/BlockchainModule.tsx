@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import CryptoJS from 'crypto-js'
 import Quiz from './Quiz'
 import { blockchainQuestions } from '../data/quizBlockchain'
+import Onboarding from './Onboarding'
 
 type Block = {
   index: number
@@ -14,6 +15,7 @@ type Block = {
 
 function BlockchainModule() {
   const [activeTab, setActiveTab] = useState<string | null>(null)
+  const [showModuleOnboarding, setShowModuleOnboarding] = useState(true)
 
   const difficulty = '0000'
   const maximumNonce = 200000
@@ -144,6 +146,70 @@ function BlockchainModule() {
     </div>
   )
 
+  const blockchainOnboardingSteps = [
+    {
+      title: 'O que é Blockchain?',
+      content: (
+        <div>
+          <p>Uma blockchain é uma cadeia de blocos interligados que registra transações de forma segura e transparente.</p>
+          <p>Cada bloco contém dados, um hash e o hash do bloco anterior. Alterações em um bloco invalidam toda a cadeia subsequente.</p>
+        </div>
+      )
+    },
+    {
+      title: 'Como os blocos se conectam?',
+      content: (
+        <div>
+          <p>Cada bloco armazena o <strong>hash do bloco anterior</strong>, criando um encadeamento seguro.</p>
+          <p>Isso garante integridade e imutabilidade, tornando quase impossível alterar blocos antigos sem recalcular toda a cadeia.</p>
+        </div>
+      )
+    },
+    {
+      title: 'Segurança da blockchain',
+      content: (
+        <div>
+          <p>A segurança vem de três pilares:</p>
+          <ul>
+            <li><strong>Hashes:</strong> cada bloco tem seu hash único.</li>
+            <li><strong>Proof of Work:</strong> mineração com esforço computacional.</li>
+            <li><strong>Distribuição:</strong> replicação em múltiplos nós da rede.</li>
+          </ul>
+        </div>
+      )
+    },
+    {
+      title: 'Mineração e consenso',
+      content: (
+        <div>
+          <p>Para adicionar um bloco, é necessário resolver um problema de mineração (ajustar nonce para hash válido).</p>
+          <p>Todos os nós da rede devem concordar sobre a validade do bloco (consenso).</p>
+        </div>
+      )
+    },
+    {
+      title: 'Exemplo prático',
+      content: (
+        <div>
+          <p>Imagine três blocos: alterar dados no primeiro muda todos os hashes subsequentes, invalidando a cadeia.</p>
+          <p>Isso demonstra a segurança e imutabilidade da blockchain.</p>
+        </div>
+      )
+    },
+    {
+      title: 'Boas práticas',
+      content: (
+        <div>
+          <ul>
+            <li>Não armazene dados sensíveis diretamente nos blocos.</li>
+            <li>Valide hashes e transações antes de adicionar blocos.</li>
+            <li>Use nós confiáveis para manter a integridade da cadeia.</li>
+          </ul>
+        </div>
+      )
+    }
+  ]
+
   return (
     <div>
       <h2>Módulo 3: Blockchain</h2>
@@ -158,6 +224,16 @@ function BlockchainModule() {
         {activeTab === 'quiz' && renderQuiz()}
         {activeTab === 'pratica' && renderPratica()}
       </div>
+
+      {showModuleOnboarding && (
+        <Onboarding
+          steps={blockchainOnboardingSteps}
+          onFinish={() => {
+            setShowModuleOnboarding(false)
+            setActiveTab('quiz')
+          }}
+        />
+      )}
     </div>
   )
 }
