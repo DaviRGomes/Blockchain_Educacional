@@ -266,32 +266,70 @@ useEffect(() => {
         )}
 
         {/* BOTOES TEORIA | QUIZ | PRÁTICA */}
-        <div style={{ marginBottom: 16 }}>
-          <button 
-            onClick={() => setActiveTab('teoria')}
-            style={activeTab === 'teoria' ? { fontWeight: 'bold', borderBottom: '2px solid black' } : {}}
-          >
-            Teoria
-          </button>
-          <button 
-            onClick={() => setActiveTab('quiz')}
-            style={activeTab === 'quiz' ? { fontWeight: 'bold', borderBottom: '2px solid black' } : {}}
-          >
-            Quiz
-          </button>
-          <button 
-            onClick={() => setActiveTab('pratica')}
-            style={activeTab === 'pratica' ? { fontWeight: 'bold', borderBottom: '2px solid black' } : {}}
-          >
-            Prática
-          </button>
+        <div style={{ marginBottom: 16, display: 'flex', justifyContent: 'space-between' }}>
+          <div>
+            <button 
+              onClick={() => setActiveTab('teoria')}
+              style={activeTab === 'teoria' ? { fontWeight: 'bold', borderBottom: '2px solid black' } : {}}
+            >
+              Teoria
+            </button>
+            <button 
+              onClick={() => setActiveTab('quiz')}
+              style={activeTab === 'quiz' ? { fontWeight: 'bold', borderBottom: '2px solid black' } : {}}
+            >
+              Quiz
+            </button>
+            <button 
+              onClick={() => setActiveTab('pratica')}
+              style={activeTab === 'pratica' ? { fontWeight: 'bold', borderBottom: '2px solid black' } : {}}
+            >
+              Prática
+            </button>
+          </div>
+          <div>
+            <button 
+              onClick={() => {
+                localStorage.setItem('skipWelcome', 'true');
+                navigate('/');
+              }}
+              style={{ 
+                padding: '5px 10px', 
+                backgroundColor: '#1E43B4', 
+                color: 'white', 
+                border: 'none', 
+                borderRadius: '4px', 
+                cursor: 'pointer',
+                fontSize: '14px'
+              }}
+            >
+              Voltar ao Início
+            </button>
+          </div>
         </div>
         <hr style={{ margin: '0 0 20px 0' }} />
 
         {/* CONTEÚDO DA ABA TEORIA */}
         {activeTab === 'teoria' && (
           <div>
+            <h3>Teoria - Hash</h3>
+            <p>Aprenda sobre os conceitos fundamentais de Hash.</p>
             
+            <button 
+              onClick={() => setShowModuleOnboarding(true)}
+              style={{ 
+                padding: '10px 16px', 
+                backgroundColor: '#1E43B4', 
+                color: 'white', 
+                border: 'none', 
+                borderRadius: '4px', 
+                cursor: 'pointer',
+                marginTop: '15px',
+                fontSize: '16px'
+              }}
+            >
+              Abrir Tutorial Guiado
+            </button>
           </div>
         )}
 
@@ -300,12 +338,12 @@ useEffect(() => {
           <div>
             <h3>Quiz - Hash</h3>
             <Quiz
-              title="Quiz - Hash"
-              questions={hashQuestions} 
+              questions={hashQuestions.slice(0, 10)}
               onFinish={(score: number, total: number) => {
                 try {
                   localStorage.setItem('hashScore', String(score))
                   localStorage.setItem('hashTotal', String(total))
+                  localStorage.setItem('hashCompleted', 'true')
                 } catch {}
               }}
             />

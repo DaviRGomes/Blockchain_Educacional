@@ -3,6 +3,7 @@ import CryptoJS from 'crypto-js'
 import Quiz from './Quiz'
 import { blockchainQuestions } from '../data/quizBlockchain'
 import Onboarding from './Onboarding'
+import { useNavigate } from 'react-router-dom'
 
 type Block = {
   index: number
@@ -14,8 +15,9 @@ type Block = {
 }
 
 function BlockchainModule() {
-  const [activeTab, setActiveTab] = useState<string | null>(null)
+  const [activeTab, setActiveTab] = useState<'teoria' | 'quiz' | 'pratica'>('teoria')
   const [showModuleOnboarding, setShowModuleOnboarding] = useState(true)
+  const navigate = useNavigate()
 
   const difficulty = '0000'
   const maximumNonce = 200000
@@ -119,26 +121,105 @@ function BlockchainModule() {
 
   const renderPratica = () => (
     <div>
-      <h3>Prática</h3>
       <p>Dificuldade: hash deve começar com <code>{difficulty}</code>.</p>
-      <div style={{ display: 'grid', gap: 12 }}>
+      <div style={{ display: 'grid', gap: 16 }}>
         {chain.map((b, i) => (
-          <div key={i} style={{ border: '1px solid #ccc', padding: 12 }}>
-            <strong>Bloco #{b.number}</strong> {isValidHash(b.hash) ? '✅' : '❌'}
-            <div style={{ display: 'grid', gridTemplateColumns: '120px 1fr', gap: 8, marginTop: 8 }}>
-              <label>Número</label>
-              <input type="number" value={b.number} onChange={(e) => handleFieldChange(i, 'number', e.target.value)} />
-              <label>Nonce</label>
-              <input type="number" value={b.nonce} onChange={(e) => handleFieldChange(i, 'nonce', e.target.value)} />
-              <label>Dados</label>
-              <input type="text" value={b.data} onChange={(e) => handleFieldChange(i, 'data', e.target.value)} />
-              <label>Previous</label>
-              <input type="text" value={b.previousHash} readOnly />
-              <label>Hash</label>
-              <input type="text" value={b.hash} readOnly style={{ color: isValidHash(b.hash) ? 'green' : 'red' }} />
+          <div key={i} style={{ 
+            border: '1px solid #ccc', 
+            padding: 16, 
+            borderRadius: 8,
+            backgroundColor: '#f9f9f9'
+          }}>
+            <div style={{ 
+              display: 'flex', 
+              justifyContent: 'space-between', 
+              alignItems: 'center', 
+              marginBottom: 12 
+            }}>
+              <strong style={{ fontSize: 18 }}>Bloco #{b.number}</strong> 
+              <span style={{ 
+                padding: '4px 8px', 
+                borderRadius: 4, 
+                backgroundColor: isValidHash(b.hash) ? '#e6f7e6' : '#ffebeb',
+                color: isValidHash(b.hash) ? '#2e7d32' : '#d32f2f',
+                fontWeight: 'bold'
+              }}>
+                {isValidHash(b.hash) ? '✅ Válido' : '❌ Inválido'}
+              </span>
             </div>
-            <div style={{ marginTop: 8 }}>
-              <button onClick={() => mineBlock(i)}>Minerar este bloco</button>
+            
+            <div style={{ display: 'grid', gap: 12 }}>
+              <div>
+                <label style={{ display: 'block', marginBottom: 8 }}>Número:</label>
+                <input 
+                  type="number" 
+                  value={b.number} 
+                  onChange={(e) => handleFieldChange(i, 'number', e.target.value)} 
+                  style={{ width: '100%', padding: 10, fontSize: 14 }}
+                />
+              </div>
+              
+              <div>
+                <label style={{ display: 'block', marginBottom: 8 }}>Nonce:</label>
+                <input 
+                  type="number" 
+                  value={b.nonce} 
+                  onChange={(e) => handleFieldChange(i, 'nonce', e.target.value)} 
+                  style={{ width: '100%', padding: 10, fontSize: 14 }}
+                />
+              </div>
+              
+              <div>
+                <label style={{ display: 'block', marginBottom: 8 }}>Dados:</label>
+                <input 
+                  type="text" 
+                  value={b.data} 
+                  onChange={(e) => handleFieldChange(i, 'data', e.target.value)} 
+                  style={{ width: '100%', padding: 10, fontSize: 14 }}
+                />
+              </div>
+              
+              <div>
+                <label style={{ display: 'block', marginBottom: 8 }}>Hash Anterior:</label>
+                <input 
+                  type="text" 
+                  value={b.previousHash} 
+                  readOnly 
+                  style={{ width: '100%', padding: 10, fontSize: 14, fontFamily: 'monospace' }}
+                />
+              </div>
+              
+              <div>
+                <label style={{ display: 'block', marginBottom: 8 }}>Hash:</label>
+                <input 
+                  type="text" 
+                  value={b.hash} 
+                  readOnly 
+                  style={{ 
+                    width: '100%', 
+                    padding: 10, 
+                    fontFamily: 'monospace',
+                    color: isValidHash(b.hash) ? '#2e7d32' : '#d32f2f'
+                  }} 
+                />
+              </div>
+            </div>
+            
+            <div style={{ marginTop: 16 }}>
+              <button 
+                onClick={() => mineBlock(i)} 
+                style={{ 
+                  padding: '10px 14px', 
+                  borderRadius: 8,
+                  backgroundColor: '#1E43B4',
+                  color: 'white',
+                  border: 'none',
+                  cursor: 'pointer',
+                  fontSize: 14
+                }}
+              >
+                Minerar este bloco
+              </button>
             </div>
           </div>
         ))}
@@ -211,29 +292,103 @@ function BlockchainModule() {
   ]
 
   return (
-    <div>
-      <h2>Módulo 3: Blockchain</h2>
-      <div>
-        <button onClick={() => setActiveTab('teoria')}>Teoria</button>
-        <button onClick={() => setActiveTab('quiz')}>Quiz</button>
-        <button onClick={() => setActiveTab('pratica')}>Prática</button>
-      </div>
-      <hr />
-      <div>
-        {activeTab === 'teoria' && renderTeoria()}
-        {activeTab === 'quiz' && renderQuiz()}
-        {activeTab === 'pratica' && renderPratica()}
-      </div>
+    <div style={{ display: 'flex', justifyContent: 'center', padding: 24 }}>
+      <div style={{ width: '100%', maxWidth: 820 }}>
+        <h2 style={{ textAlign: 'center' }}>Módulo 3: Blockchain</h2>
+        
+        {showModuleOnboarding && (
+          <Onboarding
+            steps={blockchainOnboardingSteps}
+            onFinish={() => {
+              try { localStorage.setItem('blockchainModuleOnboarding', 'true') } catch {}
+              setShowModuleOnboarding(false)
+              setActiveTab('quiz')
+            }}
+          />
+        )}
 
-      {showModuleOnboarding && (
-        <Onboarding
-          steps={blockchainOnboardingSteps}
-          onFinish={() => {
-            setShowModuleOnboarding(false)
-            setActiveTab('quiz')
-          }}
-        />
-      )}
+        {/* BOTOES TEORIA | QUIZ | PRÁTICA */}
+        <div style={{ marginBottom: 16, display: 'flex', justifyContent: 'space-between' }}>
+          <div>
+            <button 
+              onClick={() => setActiveTab('teoria')}
+              style={activeTab === 'teoria' ? { fontWeight: 'bold', borderBottom: '2px solid black' } : {}}
+            >
+              Teoria
+            </button>
+            <button 
+              onClick={() => setActiveTab('quiz')}
+              style={activeTab === 'quiz' ? { fontWeight: 'bold', borderBottom: '2px solid black' } : {}}
+            >
+              Quiz
+            </button>
+            <button 
+              onClick={() => setActiveTab('pratica')}
+              style={activeTab === 'pratica' ? { fontWeight: 'bold', borderBottom: '2px solid black' } : {}}
+            >
+              Prática
+            </button>
+          </div>
+          <div>
+            <button 
+              onClick={() => {
+                localStorage.setItem('skipWelcome', 'true');
+                navigate('/');
+              }}
+              style={{ 
+                padding: '5px 10px', 
+                backgroundColor: '#1E43B4', 
+                color: 'white', 
+                border: 'none', 
+                borderRadius: '4px', 
+                cursor: 'pointer',
+                fontSize: '14px'
+              }}
+            >
+              Voltar ao Início
+            </button>
+          </div>
+        </div>
+        <hr style={{ margin: '0 0 20px 0' }} />
+
+        {/* CONTEÚDO DAS ABAS */}
+        {activeTab === 'teoria' && (
+          <div>
+            <h3>Teoria - Blockchain</h3>
+            <p>Aprenda sobre os conceitos fundamentais de Blockchain.</p>
+            
+            <button 
+              onClick={() => setShowModuleOnboarding(true)}
+              style={{ 
+                padding: '10px 16px', 
+                backgroundColor: '#1E43B4', 
+                color: 'white', 
+                border: 'none', 
+                borderRadius: '4px', 
+                cursor: 'pointer',
+                marginTop: '15px',
+                fontSize: '16px'
+              }}
+            >
+              Abrir Tutorial Guiado
+            </button>
+            
+            {renderTeoria()}
+          </div>
+        )}
+        {activeTab === 'quiz' && (
+          <div>
+            <h3>Quiz - Blockchain</h3>
+            {renderQuiz()}
+          </div>
+        )}
+        {activeTab === 'pratica' && (
+          <div>
+            <h3>Prática - Blockchain</h3>
+            {renderPratica()}
+          </div>
+        )}
+      </div>
     </div>
   )
 }
