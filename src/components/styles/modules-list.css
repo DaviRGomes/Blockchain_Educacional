@@ -1,0 +1,97 @@
+/* Tema geral escuro */
+.modules-page {
+  background: radial-gradient(circle at top left, #0a0a14, #050509);
+  color: #f2f2f2;
+  min-height: 100vh;
+  padding: 60px 5%;
+  font-family: 'Poppins', sans-serif;
+}
+
+/* Título principal */
+.page-title {
+  font-size: 1.8rem;
+  color: #4ef3ff;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+  text-align: center;
+}
+
+.subtitle {
+  text-align: center;
+  color: #b5b5b5;
+  margin-bottom: 40px;
+}
+
+/* Grid de módulos */
+.modules-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 25px;
+}
+
+/* Cartões de módulo */
+.module-card {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  padding: 24px;
+  text-align: center;
+  box-shadow: 0 0 15px rgba(0, 255, 255, 0.05);
+  transition: all 0.3s ease;
+}
+
+.module-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 0 18px rgba(0, 255, 255, 0.25);
+}
+
+.module-card h2 {
+  color: #4ef3ff;
+  font-size: 1.2rem;
+  margin-bottom: 10px;
+}
+
+.module-card p {
+  color: #b8b8b8;
+  font-size: 0.9rem;
+  margin-bottom: 20px;
+}
+
+/* Botão padrão */
+.btn {
+  background: linear-gradient(90deg, #4ef3ff, #00b4ff);
+  border: none;
+  border-radius: 30px;
+  color: #000;
+  font-weight: 600;
+  padding: 10px 24px;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+.btn:hover {
+  background: linear-gradient(90deg, #00b4ff, #4ef3ff);
+  transform: scale(1.05);
+}
+
+/* Estado bloqueado */
+.locked {
+  color: #777;
+  font-size: 0.85rem;
+}
+
+/* Destaque de highlight */
+.highlight {
+  border: 2px solid #00f0ff;
+  box-shadow: 0 0 18px rgba(0, 255, 255, 0.35);
+}
+
+/* Cores especiais */
+.intro {
+  background: rgba(0, 255, 255, 0.08);
+}
+
+.final {
+  background: rgba(255, 255, 255, 0.06);
+}
