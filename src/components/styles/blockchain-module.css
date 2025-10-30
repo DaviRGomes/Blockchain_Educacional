@@ -1,0 +1,169 @@
+.blockchain-container {
+  display: flex;
+  justify-content: center;
+  padding: 2rem;
+  background: radial-gradient(circle at top, #0c1221 0%, #090d18 100%);
+  color: #e8ebf7;
+  min-height: 100vh;
+  font-family: 'Inter', sans-serif;
+}
+
+.blockchain-inner {
+  width: 100%;
+  max-width: 880px;
+  background: rgba(255, 255, 255, 0.03);
+  padding: 2rem;
+  border-radius: 16px;
+  box-shadow: 0 0 25px rgba(0, 0, 0, 0.35);
+}
+
+.blockchain-inner h2 {
+  text-align: center;
+  color: #5cc3ff;
+  margin-bottom: 1rem;
+}
+
+.blockchain-tabs {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.blockchain-tabs-left button {
+  background: none;
+  border: none;
+  color: #cdd5ee;
+  margin-right: 1rem;
+  font-size: 1rem;
+  cursor: pointer;
+  padding-bottom: 4px;
+  transition: color 0.2s, border-bottom 0.2s;
+}
+
+.blockchain-tabs-left button.active {
+  border-bottom: 2px solid #1e43b4;
+  color: #ffffff;
+  font-weight: bold;
+}
+
+.blockchain-tabs-left button:hover {
+  color: #6fbaff;
+}
+
+.blockchain-tabs-right button {
+  background: #1e43b4;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 6px 12px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.blockchain-tabs-right button:hover {
+  background: #2a58df;
+}
+
+.blockchain-section {
+  margin-top: 1rem;
+}
+
+.open-tutorial-btn {
+  background: #1e43b4;
+  border: none;
+  border-radius: 6px;
+  color: white;
+  padding: 10px 16px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.open-tutorial-btn:hover {
+  background: #2a58df;
+}
+
+.blockchain-grid {
+  display: grid;
+  gap: 1rem;
+}
+
+.blockchain-block {
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 8px;
+  padding: 1rem;
+  background: rgba(255, 255, 255, 0.03);
+  transition: border-color 0.2s;
+}
+
+.blockchain-block.valid {
+  border-color: #3cb371;
+}
+
+.blockchain-block.invalid {
+  border-color: #d32f2f;
+}
+
+.block-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.6rem;
+  font-weight: 600;
+}
+
+.blockchain-block label {
+  display: block;
+  color: #a4c7ff;
+  font-size: 0.9rem;
+  margin-bottom: 0.2rem;
+}
+
+.blockchain-block input {
+  width: 100%;
+  padding: 8px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 6px;
+  color: #e8eefe;
+  margin-bottom: 8px;
+  transition: border 0.2s;
+}
+
+.blockchain-block input:focus {
+  border-color: #4a8aff;
+  outline: none;
+}
+
+.readonly {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.hash-valid {
+  color: #3cb371;
+}
+
+.hash-invalid {
+  color: #d32f2f;
+}
+
+.blockchain-block button {
+  background: #1e43b4;
+  color: white;
+  border: none;
+  padding: 10px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.95rem;
+  margin-top: 6px;
+  transition: background 0.2s, transform 0.1s;
+}
+
+.blockchain-block button:hover {
+  background: #2a58df;
+  transform: translateY(-2px);
+}
+
+hr {
+  border: 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.15);
+  margin-bottom: 1.5rem;
+}
