@@ -6,6 +6,16 @@ import { useNavigate } from 'react-router-dom'
 import Onboarding from './Onboarding'
 import GuidedTooltip from './GuidedTooltip'
 
+// Função utilitária para embaralhar array usando algoritmo Fisher-Yates
+function shuffleArray<T>(array: T[]): T[] {
+  const shuffled = [...array] // Não modifica o array original
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]]
+  }
+  return shuffled
+}
+
 function BlockModule() {
   const [activeTab, setActiveTab] = useState<'teoria' | 'quiz' | 'pratica'>('teoria')
   const [showModuleOnboarding, setShowModuleOnboarding] = useState(false)
@@ -27,6 +37,11 @@ function BlockModule() {
 
   const navigate = useNavigate()
 
+  // Embaralha blockQuestions apenas uma vez na montagem e seleciona 10 perguntas aleatórias
+  const randomTenQuestions = useMemo(() => {
+    const shuffled = shuffleArray(blockQuestions)
+    return shuffled.slice(0, 10)
+  }, [])
 
   // Start the guided tour only when the user navigates to the practice tab
   useEffect(() => {
@@ -460,7 +475,21 @@ function BlockModule() {
         )}
 
         {/* CONTEÚDO DA ABA QUIZ */}
-        {activeTab === 'quiz' && renderQuiz()}
+        {activeTab === 'quiz' &&(
+          <div>
+            <h3>Quiz - Blocos</h3>
+            <Quiz
+              questions={randomTenQuestions}
+              onFinish={(score: number, total: number) => {
+                try {
+                  localStorage.setItem('blockScore', String(score))
+                  localStorage.setItem('blockTotal', String(total))
+                  localStorage.setItem('blockCompleted', 'true')
+                } catch {}
+              }}
+            />
+          </div>
+        )}
 
         {/* CONTEÚDO DA ABA PRÁTICA */}
         {activeTab === 'pratica' && renderPratica()}

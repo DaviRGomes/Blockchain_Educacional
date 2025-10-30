@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useRef, useState, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import CryptoJS from 'crypto-js'
 import Quiz from '../components/Quiz' // Assumindo que Quiz está em 'components'
@@ -10,6 +10,15 @@ import { hashQuestions } from '../data/quizHash'
 import './styles/onboarding.css' // garante estilos do tooltip
 import Onboarding from './Onboarding'
 
+// Função utilitária para embaralhar array usando algoritmo Fisher-Yates
+function shuffleArray<T>(array: T[]): T[] {
+  const shuffled = [...array] // Não modifica o array original
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]]
+  }
+  return shuffled
+}
 
 function HashModule() {
   const [text, setText] = useState('')
@@ -28,6 +37,12 @@ function HashModule() {
   const computeHash = (txt: string) => CryptoJS.SHA256(txt).toString()
   const timeoutsRef = useRef<number[]>([])
   const pushTimeout = (id: number) => { timeoutsRef.current.push(id) }
+
+  // Embaralha hashQuestions apenas uma vez na montagem e seleciona 10 perguntas aleatórias
+  const randomTenQuestions = useMemo(() => {
+    const shuffled = shuffleArray(hashQuestions)
+    return shuffled.slice(0, 10)
+  }, [])
 
   // 1. useEffect para TooltipPos (Lógica de Posicionamento)
   useEffect(() => {
@@ -338,7 +353,7 @@ useEffect(() => {
           <div>
             <h3>Quiz - Hash</h3>
             <Quiz
-              questions={hashQuestions.slice(0, 10)}
+              questions={randomTenQuestions}
               onFinish={(score: number, total: number) => {
                 try {
                   localStorage.setItem('hashScore', String(score))

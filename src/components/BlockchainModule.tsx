@@ -1,9 +1,19 @@
-import React, { useState } from 'react'
+import React, { useState, useMemo } from 'react'
 import CryptoJS from 'crypto-js'
 import Quiz from './Quiz'
 import { blockchainQuestions } from '../data/quizBlockchain'
 import Onboarding from './Onboarding'
 import { useNavigate } from 'react-router-dom'
+
+// Função utilitária para embaralhar array usando algoritmo Fisher-Yates
+function shuffleArray<T>(array: T[]): T[] {
+  const shuffled = [...array] // Não modifica o array original
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1))
+    ;[shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]]
+  }
+  return shuffled
+}
 
 type Block = {
   index: number
@@ -18,6 +28,12 @@ function BlockchainModule() {
   const [activeTab, setActiveTab] = useState<'teoria' | 'quiz' | 'pratica'>('teoria')
   const [showModuleOnboarding, setShowModuleOnboarding] = useState(true)
   const navigate = useNavigate()
+
+  // Embaralha blockchainQuestions apenas uma vez na montagem e seleciona 10 perguntas aleatórias
+  const randomTenQuestions = useMemo(() => {
+    const shuffled = shuffleArray(blockchainQuestions)
+    return shuffled.slice(0, 10)
+  }, [])
 
   const difficulty = '0000'
   const maximumNonce = 200000
@@ -108,7 +124,7 @@ function BlockchainModule() {
   const renderQuiz = () => (
     <Quiz
       title="Quiz: Blockchain"
-      questions={blockchainQuestions}
+      questions={randomTenQuestions}
       onFinish={(score: number, total: number) => {
         try {
           localStorage.setItem('blockchainCompleted', 'true')

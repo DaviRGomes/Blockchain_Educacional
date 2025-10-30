@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Quiz from './Quiz'
 import { hashQuestions } from '../data/quizHash'
@@ -11,6 +11,16 @@ type Result = {
   score: number
   total: number
   level: 'Iniciante' | 'Intermediário' | 'Avançado'
+}
+
+// Função utilitária para embaralhar array usando algoritmo Fisher-Yates
+function shuffleArray<T>(array: T[]): T[] {
+  const shuffled = [...array]
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1))
+    ;[shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]]
+  }
+  return shuffled
 }
 
 function FinalQuiz() {
@@ -32,11 +42,13 @@ function FinalQuiz() {
     )
   }
 
-  const finalQuestions = [
-    ...hashQuestions,
-    ...blockQuestions,
-    ...blockchainQuestions
-  ]
+  // Seleciona 5 perguntas aleatórias de cada módulo apenas na montagem
+  const finalQuestions = useMemo(() => {
+    const fromHash = shuffleArray(hashQuestions).slice(0, 5)
+    const fromBlock = shuffleArray(blockQuestions).slice(0, 5)
+    const fromBlockchain = shuffleArray(blockchainQuestions).slice(0, 5)
+    return [...fromHash, ...fromBlock, ...fromBlockchain]
+  }, [])
 
   const initialLevel = localStorage.getItem('initialKnowledgeLevel') || '—'
   const initialScore = Number(localStorage.getItem('initialScore') ?? 0)

@@ -1,7 +1,17 @@
-import React, { useState } from 'react'
+import React, { useState, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Quiz from './Quiz'
 import { introQuestions } from '../data/quizIntro'
+
+// Função utilitária para embaralhar array usando algoritmo Fisher-Yates
+function shuffleArray<T>(array: T[]): T[] {
+  const shuffled = [...array] // Não modifica o array original
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]]
+  }
+  return shuffled
+}
 
 function IntroQuiz() {
   const navigate = useNavigate()
@@ -21,20 +31,17 @@ function IntroQuiz() {
     navigate('/modules')
   }
 
-  const selectedQuestions = React.useMemo(() => {
-    const arr = [...introQuestions]
-    for (let i = arr.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1))
-      ;[arr[i], arr[j]] = [arr[j], arr[i]]
-    }
-    return arr.slice(0, 10)
+  // Embaralha introQuestions apenas uma vez na montagem e seleciona 10 perguntas aleatórias
+  const randomTenQuestions = useMemo(() => {
+    const shuffled = shuffleArray(introQuestions)
+    return shuffled.slice(0, 10)
   }, [])
 
   return (
     <div>
       <h2>Quiz Inicial</h2>
       <p>Teste seus conhecimentos antes de iniciar os estudos.</p>
-      <Quiz title="Avaliação de Conhecimento" questions={selectedQuestions} onFinish={handleFinish} />
+      <Quiz title="Avaliação de Conhecimento" questions={randomTenQuestions} onFinish={handleFinish} />
     </div>
   )
 }
