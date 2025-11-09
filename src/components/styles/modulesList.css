@@ -1,0 +1,732 @@
+/* Tema Blockchain Dark Mode + Neon Accent */
+
+:root {
+
+  --bg-900: #121223;
+
+  --bg-800: #0f1020;
+
+  --bg-700: #0b0c19;
+
+
+
+  --accent-neon: #00ffc0;
+
+  --accent-neon-soft: rgba(0, 255, 192, 0.2);
+
+  --accent-neon-glow: rgba(0, 255, 192, 0.12);
+
+
+
+  --text-white: #eaf1f8;
+
+  --text-muted: #9aa4b2;
+
+
+
+  --card-border: rgba(255, 255, 255, 0.08);
+
+  --card-bg-1: rgba(18, 18, 35, 0.92);
+
+  --card-bg-2: rgba(10, 22, 22, 0.92);
+
+  --card-bg-3: rgba(14, 18, 28, 0.92);
+
+}
+
+
+
+/* Container da página de módulos */
+
+.modules-flow {
+
+  position: relative;
+
+  width: 100%;
+
+  max-width: 1200px;
+
+  margin: 0 auto;
+
+  padding: 24px 20px 40px;
+
+  color: var(--text-white);
+
+  background: transparent;
+
+  isolation: isolate;
+
+  /* NOVO: fonte única de verdade para colunas e espaçamentos do grid */
+  --grid-columns: 3;
+  --grid-gap: 14px;
+}
+
+
+
+/* Padrão de rede sutil no fundo do container */
+
+.modules-flow::before {
+
+  content: "";
+
+  position: absolute;
+
+  inset: 0;
+
+  z-index: -1;
+
+  background:
+
+    /* grid diagonal sutil */
+
+    linear-gradient(135deg, rgba(255,255,255,0.06) 0.8px, transparent 0.8px) 0 0 / 22px 22px,
+
+    /* pontos suaves */
+
+    radial-gradient(circle at 10% 20%, rgba(0,255,192,0.06) 1px, transparent 2px) 0 0 / 180px 180px,
+
+    radial-gradient(circle at 85% 30%, rgba(0,255,192,0.05) 1px, transparent 2px) 0 0 / 220px 220px,
+
+    /* base escura */
+
+    var(--bg-900);
+
+  opacity: 0.35;
+
+  pointer-events: none;
+
+}
+
+
+
+/* Título da página */
+
+.page-title {
+
+  margin: 0 0 16px;
+
+  font-size: 28px;
+
+  font-weight: 700;
+
+  color: var(--text-white);
+
+  letter-spacing: 0.4px;
+
+}
+
+
+
+/* Card base */
+
+.card {
+
+  position: relative;
+
+  /* CORREÇÃO: Usar flexbox para gerenciar o layout interno dos cards */
+
+  display: flex;
+
+  flex-direction: column;
+
+  border-radius: 16px;
+
+  padding: 18px 16px;
+
+  border: 1px solid var(--card-border);
+
+  background:
+
+    linear-gradient(135deg, var(--card-bg-1) 0%, var(--card-bg-2) 48%, var(--card-bg-3) 100%);
+
+  box-shadow:
+
+    0 6px 24px rgba(0,0,0,0.45),
+
+    0 0 0 1px rgba(255,255,255,0.02),
+
+    0 0 14px var(--accent-neon-glow);
+
+  transition: transform 180ms ease, box-shadow 200ms ease, border-color 200ms ease;
+
+  /* NOVO: evita sangramento do ::before e glows internos */
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+
+
+.card:hover {
+
+  transform: translateY(-2px);
+
+  border-color: var(--accent-neon-soft);
+
+  box-shadow:
+
+    0 10px 30px rgba(0,0,0,0.5),
+
+    0 0 0 1px rgba(255,255,255,0.03),
+
+    0 0 18px rgba(0,255,192,0.16);
+
+}
+
+
+
+/* Barra sutil de destaque no topo do card */
+
+.card::before {
+
+  content: "";
+
+  position: absolute;
+
+  left: 12px;
+
+  right: 12px;
+
+  top: 0;
+
+  height: 2px;
+
+  border-radius: 2px;
+
+  background: linear-gradient(90deg, transparent, var(--accent-neon), transparent);
+
+  opacity: 0.6;
+
+}
+
+
+
+/* Variantes de card em largura total */
+
+.card-start,
+
+.card-final {
+
+  margin: 8px 0 18px;
+
+}
+
+
+
+/* O módulo card herda .card mas pode ter spacing específico */
+
+.module-card {
+
+  margin: 10px 0;
+
+  /* Garante que o item do grid se estique para a altura máxima */
+
+  height: 100%; 
+
+}
+
+
+
+/* Header dentro do card: ícone + título + badge */
+
+.card-header {
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 12px;
+
+  margin-bottom: 8px;
+
+}
+
+
+
+.card-icon {
+
+  width: 28px;
+
+  height: 28px;
+
+  object-fit: contain;
+
+  filter: drop-shadow(0 0 10px rgba(0,255,192,0.18));
+
+}
+
+
+
+.card-title {
+
+  font-size: 20px;
+
+  font-weight: 700;
+
+  color: var(--text-white);
+
+}
+
+
+
+/* Descrição do card */
+
+.card-desc {
+
+  margin: 6px 0 14px;
+
+  font-size: 14px;
+
+  line-height: 1.48;
+
+  color: var(--text-muted);
+
+  /* CORREÇÃO: Ocupa o espaço restante antes do botão */
+
+  flex-grow: 1; 
+
+}
+
+
+
+/* Badge para o “PONTO DE PARTIDA” */
+
+.badge {
+
+  margin-left: auto;
+
+  padding: 4px 10px;
+
+  font-size: 11px;
+
+  font-weight: 700;
+
+  border-radius: 999px;
+
+  letter-spacing: 0.7px;
+
+  text-transform: uppercase;
+
+  color: var(--bg-900);
+
+  background: var(--accent-neon);
+
+  box-shadow: 0 0 12px rgba(0,255,192,0.4);
+
+}
+
+
+
+.badge-start {
+
+  box-shadow: 0 0 16px rgba(0,255,192,0.55);
+
+}
+
+
+
+/* Ações do card (botões) */
+
+.card-actions {
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 10px;
+
+  /* Garante que a margem do botão seja consistente na parte inferior */
+
+  margin-top: auto; 
+
+}
+
+
+
+/* Botões base */
+
+.btn {
+
+  display: inline-flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  height: 40px;
+
+  padding: 0 16px;
+
+  border-radius: 10px;
+
+  font-size: 13px;
+
+  font-weight: 800;
+
+  letter-spacing: 0.4px;
+
+  text-transform: uppercase;
+
+  cursor: pointer;
+
+  transition: filter 160ms ease, box-shadow 160ms ease, transform 160ms ease, background 160ms ease, opacity 160ms ease;
+
+  border: 1px solid rgba(255,255,255,0.12);
+
+  color: var(--text-white);
+
+  background: rgba(255,255,255,0.04);
+
+}
+
+
+
+.btn:hover {
+
+  filter: brightness(1.08);
+
+  transform: translateY(-1px);
+
+}
+
+
+
+/* Botão primário com neon */
+
+.btn-primary {
+
+  border-color: var(--accent-neon);
+
+  color: #0a1a16;
+
+  background:
+
+    linear-gradient(180deg, #00ffd1 0%, #00dfb8 100%);
+
+  box-shadow:
+
+    0 0 0 1px rgba(0,255,192,0.35),
+
+    0 8px 18px rgba(0,255,192,0.22),
+
+    inset 0 -2px 6px rgba(0,0,0,0.25);
+
+}
+
+
+
+.btn-primary:hover {
+
+  filter: saturate(1.08) brightness(1.02);
+
+  box-shadow:
+
+    0 0 0 1px rgba(0,255,192,0.45),
+
+    0 10px 22px rgba(0,255,192,0.28),
+
+    inset 0 -2px 6px rgba(0,0,0,0.25);
+
+}
+
+
+
+/* Botão fantasma (outline leve) */
+
+.btn-ghost {
+
+  border-color: rgba(255,255,255,0.16);
+
+  background: transparent;
+
+  color: var(--text-white);
+
+}
+
+
+
+.btn-ghost:hover {
+
+  border-color: var(--accent-neon-soft);
+
+  box-shadow: 0 0 12px rgba(0,255,192,0.12);
+
+}
+
+
+
+/* Estado desabilitado */
+
+.disabled,
+
+.disabled-btn,
+
+.btn:disabled {
+
+  opacity: 0.55;
+
+  cursor: not-allowed;
+
+  filter: grayscale(20%);
+
+  box-shadow: none !important;
+
+  transform: none !important;
+
+}
+
+
+
+/* Grid: três módulos em fluxo */
+
+/* Grid dos módulos: trilhas idênticas às dos conectores */
+.modules-grid-flow {
+  display: grid;
+  grid-template-columns: repeat(var(--grid-columns), minmax(0, 1fr));
+  gap: var(--grid-gap);
+  align-items: stretch;    /* força os cards a ocuparem a altura disponível */
+  grid-auto-rows: 1fr;     /* normaliza a altura por linha */
+  position: relative;
+  margin: 6px 0 14px;
+  box-sizing: border-box;
+}
+
+
+
+/* Conectores entre seções: trilhas idênticas às dos módulos */
+.flow-connectors {
+  display: grid;
+  grid-template-columns: repeat(var(--grid-columns), minmax(0, 1fr));
+  gap: var(--grid-gap);
+  align-items: center;
+  justify-items: center;   
+  width: 100%;
+  position: relative;
+  pointer-events: none;
+  box-sizing: border-box;
+  
+}
+
+
+
+/* Conector superior: espaço e linha tracejada horizontal */
+
+.flow-connectors.to-modules {
+ height: 40px; /* Mantemos a altura para referência */
+ margin: 12px 0 8px;
+ z-index: 2;
+ position: relative; /* Garante que o ::before se posicione corretamente */
+}
+
+.flow-connectors.to-modules::before {
+ content: "";
+ position: absolute;
+ top: 50%; /* Centraliza verticalmente o ponto de partida da linha */
+ transform: translateY(-50%); /* Garante o centro exato da linha */
+ left: 0;
+ right: 0;
+ border-top: 2px dashed var(--accent-neon);
+ opacity: 0.6;
+ filter: drop-shadow(0 0 6px rgba(0,255,192,0.14));
+}
+
+
+
+/* Conector inferior: espaço e linha tracejada horizontal */
+
+.flow-connectors.to-final {
+
+  height: 48px;
+
+  margin: 10px 0 0;        /* respiro entre módulos e conector inferior */
+
+  z-index: 2;
+
+}
+
+.flow-connectors.to-final::before {
+
+  content: "";
+
+  position: absolute;
+
+  bottom: 12px;
+
+  left: 0;
+
+  right: 0;
+
+  border-bottom: 2px dashed var(--accent-neon);
+
+  opacity: 0.6;
+
+  filter: drop-shadow(0 0 6px rgba(0,255,192,0.14));
+
+}
+
+
+
+/* Taps centralizados por coluna do grid */
+
+.tap {
+
+  width: 12px;
+
+  height: 12px;
+
+  border: 2px solid var(--accent-neon);
+
+  border-radius: 5px;
+
+  background: radial-gradient(circle at 30% 30%, rgba(0,255,192,0.8) 0%, rgba(0,255,192,0.25) 48%, transparent 70%);
+
+  box-shadow: 0 0 10px rgba(0,255,192,0.35);
+
+  justify-self: center; /* garante centro horizontal dentro da célula */
+
+}
+
+
+
+/* Mapear cada tap para sua coluna de forma robusta por classe */
+.flow-connectors .tap.left { grid-column: 1; }
+.flow-connectors .tap.center { grid-column: 2; }
+.flow-connectors .tap.right { grid-column: 3; }
+
+
+.tap {
+ /* ... seu estilo de tap ... */
+ position: relative; /* Essencial: Torna o tap o ponto de referência para as linhas verticais */
+ /* ... seu estilo de tap ... */
+}
+
+/* Conexões verticais (Topo → Módulos) */
+
+.to-modules .tap {
+
+
+}
+
+.to-modules .tap::after {
+content: "";
+display: block;
+width: 0;
+height: 24px;
+border-left: 2px dashed var(--accent-neon);
+opacity: 0.6;
+
+/* NOVO POSICIONAMENTO: Parte da base do tap, indo para cima (em direção ao Quiz Inicial) */
+position: absolute;
+top: -28px; /* Ajuste para que a linha suba até o espaço superior. 
+            O valor deve ser a altura desejada da linha + metade da altura do tap (aproximadamente) */
+left: 50%;
+transform: translateX(-50%);
+margin-top: 0; /* REMOVER margin-top que interfere no absolute positioning */
+}
+
+
+/* Conexões verticais (Módulos → Final) */
+
+.to-final .tap {
+
+
+
+}
+
+.to-final .tap::after {
+ content: "";
+ display: block;
+ width: 0;
+ height: 28px;
+ border-left: 2px dashed var(--accent-neon);
+ opacity: 0.6;
+ /* NOVO POSICIONAMENTO: Parte da base do tap, indo para baixo (em direção ao Quiz Final) */
+ position: absolute;
+ bottom: -32px; /* Ajuste para que a linha desça até o espaço inferior */
+ left: 50%;
+ transform: translateX(-50%);
+ margin-bottom: 0; /* REMOVER margin-bottom que interfere no absolute positioning */
+}
+
+
+
+/* Respiro claro para evitar sobreposição com os conectores */
+
+.card-start {
+
+  margin-bottom: 18px;      /* espaço antes do conector superior */
+
+}
+
+.card-final {
+
+  margin-top: 32px;         /* espaço após o conector inferior */
+
+  position: relative;
+
+  z-index: 1;               /* fica abaixo dos conectores caso se cruzem */
+
+}
+
+
+
+
+
+/* Media Queries de Responsividade */
+@media (max-width: 1020px) {
+  /* Atualiza apenas o pai, ambos grids herdam */
+  .modules-flow { --grid-columns: 2; }
+  /* Esconde o terceiro conector quando houver 2 colunas */
+  .flow-connectors .tap.right { display: none; }
+}
+@media (max-width: 720px) {
+  /* Atualiza apenas o pai, ambos grids herdam */
+  .modules-flow { --grid-columns: 1; }
+  /* Esconde centro e direita quando houver 1 coluna */
+  .flow-connectors .tap.center, 
+  .flow-connectors .tap.right { display: none; }
+}
+
+
+
+@media (max-width: 720px) {
+
+  .modules-grid-flow,
+
+  .flow-connectors {
+
+    grid-template-columns: 1fr;
+
+  }
+
+  .tap:nth-child(2), .tap:nth-child(3) {
+
+      display: none;
+
+  }
+
+}
+
+
+
+/* Pequenos ajustes de foco/acessibilidade */
+
+.btn:focus-visible {
+
+  outline: 2px solid var(--accent-neon);
+
+  outline-offset: 2px;
+
+}
+
+
+
+.card:focus-within {
+
+  box-shadow:
+
+    0 0 0 2px rgba(255,255,255,0.06),
+
+    0 0 0 4px rgba(0,255,192,0.18);
+
+}
+

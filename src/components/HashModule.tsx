@@ -38,6 +38,75 @@ function HashModule() {
   const timeoutsRef = useRef<number[]>([])
   const pushTimeout = (id: number) => { timeoutsRef.current.push(id) }
 
+  // Teoria paginada usando os mesmos textos do Onboarding
+  const [theoryPage, setTheoryPage] = useState(0)
+  const hashTeoriaSteps = [
+    {
+      title: 'O que é uma Função Hash?',
+      content: (
+        <div>
+          <p>
+            Uma função hash é um algoritmo que mapeia dados de tamanho arbitrário para um valor de tamanho fixo — o hash. Exemplo comum: SHA-256 gera 256 bits (64 chars em hex).
+          </p>
+          <p>Propriedades importantes:</p>
+          <ul>
+            <li><strong>Determinismo</strong>: o mesmo input sempre produz o mesmo hash.</li>
+            <li><strong>Unidirecionalidade</strong>: não é viável (na prática) inverter o hash para recuperar o input.</li>
+            <li><strong>Efeito Avalanche</strong>: pequenas alterações no input resultam em alterações completamente diferentes no hash.</li>
+            <li><strong>Tamanho fixo</strong>: independentemente do tamanho do input, o hash tem tamanho constante.</li>
+          </ul>
+        </div>
+      )
+    },
+    {
+      title: 'Por que Hash é útil na Blockchain?',
+      content: (
+        <div>
+          <p>
+            Em uma blockchain, o hash funciona como uma "impressão digital" de blocos e transações. Ele garante integridade: qualquer alteração nos dados altera o hash e quebra a cadeia.
+          </p>
+          <p>
+            Em blocos, normalmente usamos o hash do bloco anterior (previousHash) para ligar blocos. Assim, alterar um bloco exige recalcular todos os blocos subsequentes.
+          </p>
+        </div>
+      )
+    },
+    {
+      title: 'Segurança: colisões e força bruta',
+      content: (
+        <div>
+          <p>
+            Uma <em>colisão</em> é quando dois inputs diferentes produzem o mesmo hash. Algoritmos modernos (SHA-256) são projetados para reduzir ao máximo a chance de colisões.
+          </p>
+          <p>Ataques possíveis:</p>
+          <ul>
+            <li><strong>Força bruta</strong>: tentar inputs até encontrar um hash alvo.</li>
+            <li><strong>Criptoanálise</strong>: explorar propriedades fracas da função — raras em SHA-256.</li>
+          </ul>
+          <p>
+            Por isso, blockchains usam funções fortes (SHA-256) e parâmetros de dificuldade para tornar a prova de trabalho custosa.
+          </p>
+        </div>
+      )
+    },
+    {
+      title: 'Boas práticas',
+      content: (
+        <div>
+          <p>
+            Importante: hashes não são criptografia de dados sensíveis (sem salt/pepper). Para armazenamento de senhas, use funções KDF (bcrypt, scrypt, Argon2) com salt.
+          </p>
+          <p>
+            Para integridade e encadeamento, hashes puros (SHA-256) são apropriados e usados amplamente em blockchains.
+          </p>
+        </div>
+      )
+    }
+  ]
+  const theoryPages = hashTeoriaSteps
+  const nextTheory = () => setTheoryPage((p) => Math.min(p + 1, theoryPages.length - 1))
+  const prevTheory = () => setTheoryPage((p) => Math.max(p - 1, 0))
+
   // Embaralha hashQuestions apenas uma vez na montagem e seleciona 10 perguntas aleatórias
   const randomTenQuestions = useMemo(() => {
     const shuffled = shuffleArray(hashQuestions)
@@ -189,134 +258,36 @@ useEffect(() => {
     <div style={{ display: 'flex', justifyContent: 'center', padding: 24 }}>
       <div style={{ width: '100%', maxWidth: 820 }}>
         <h2 style={{ textAlign: 'center' }}>Módulo 1: Hash</h2>
-        {/* Module-specific onboarding (rich theory) */}
-        {showModuleOnboarding && (
-          <Onboarding
-            onFinish={() => {
-              try { localStorage.setItem('hashModuleOnboarding', 'true') } catch {}
-              setShowModuleOnboarding(false)
-              setActiveTab('quiz')
-            }}
-            steps={[
-              {
-                title: 'O que é uma Função Hash?',
-                content: (
-                  <div>
-                    <p>
-                      Uma função hash é um algoritmo que mapeia dados de tamanho arbitrário para um valor de tamanho fixo — o hash. Exemplo comum: SHA-256 gera 256 bits (64 chars em hex).
-                    </p>
-                    <p>
-                      Propriedades importantes:
-                    </p>
-                    <ul>
-                      <li><strong>Determinismo</strong>: o mesmo input sempre produz o mesmo hash.</li>
-                      <li><strong>Unidirecionalidade</strong>: não é viável (na prática) inverter o hash para recuperar o input.</li>
-                      <li><strong>Efeito Avalanche</strong>: pequenas alterações no input resultam em alterações completamente diferentes no hash.</li>
-                      <li><strong>Tamanho fixo</strong>: independentemente do tamanho do input, o hash tem tamanho constante.</li>
-                    </ul>
-                  </div>
-                )
-              },
-              {
-                title: 'Por que Hash é útil na Blockchain?',
-                content: (
-                  <div>
-                    <p>
-                      Em uma blockchain, o hash funciona como uma "impressão digital" de blocos e transações. Ele garante integridade: qualquer alteração nos dados altera o hash e quebra a cadeia.
-                    </p>
-                    <p>
-                      Em blocos, normalmente usamos o hash do bloco anterior (previousHash) para ligar blocos. Assim, alterar um bloco exige recalcular todos os blocos subsequentes.
-                    </p>
-                  </div>
-                )
-              },
-              {
-                title: 'Segurança: colisões e força bruta',
-                content: (
-                  <div>
-                    <p>
-                      Uma <em>colisão</em> é quando dois inputs diferentes produzem o mesmo hash. Algoritmos modernos (SHA-256) são projetados para reduzir ao máximo a chance de colisões.
-                    </p>
-                    <p>
-                      Ataques possíveis:
-                    </p>
-                    <ul>
-                      <li><strong>Força bruta</strong>: tentar inputs até encontrar um hash alvo (cara a cara com a dificuldade de mineração).</li>
-                      <li><strong>Criptoanálise</strong>: técnicas teóricas para explorar propriedades fracas de uma função hash — raras em SHA-256.</li>
-                    </ul>
-                    <p>
-                      Por isso, blockchains usam funções fortes (SHA-256) e parâmetros de dificuldade para tornar a prova de trabalho custosa.
-                    </p>
-                  </div>
-                )
-              },
-              {
-                title: 'Representação prática',
-                content: (
-                  <div>
-                    <p>
-                      No painel de prática deste módulo você pode digitar texto e gerar o SHA-256. Experimente pequenas mudanças e veja o efeito avalanche.
-                    </p>
-                    <p>
-                      Exemplo curto: "hello" → hash A; "hello!" → hash B totalmente diferente.
-                    </p>
-                  </div>
-                )
-              },
-              {
-                title: 'Boas práticas',
-                content: (
-                  <div>
-                    <p>
-                      Importante: hashes não são criptografia de dados sensíveis (sem salt/pepper). Para armazenamento de senhas, use funções KDF (bcrypt, scrypt, Argon2) com salt.
-                    </p>
-                    <p>
-                      Para integridade e encadeamento, hashes puros (SHA-256) são apropriados e usados amplamente em blockchains.
-                    </p>
-                  </div>
-                )
-              }
-            ]}
-          />
-        )}
-
         {/* BOTOES TEORIA | QUIZ | PRÁTICA */}
         <div style={{ marginBottom: 16, display: 'flex', justifyContent: 'space-between' }}>
-          <div>
-            <button 
+          <div className="tabs">
+            <button
               onClick={() => setActiveTab('teoria')}
-              style={activeTab === 'teoria' ? { fontWeight: 'bold', borderBottom: '2px solid black' } : {}}
+              className={`tab-btn ${activeTab === 'teoria' ? 'active' : ''}`}
             >
               Teoria
             </button>
-            <button 
+            <button
               onClick={() => setActiveTab('quiz')}
-              style={activeTab === 'quiz' ? { fontWeight: 'bold', borderBottom: '2px solid black' } : {}}
+              className={`tab-btn ${activeTab === 'quiz' ? 'active' : ''}`}
             >
               Quiz
             </button>
-            <button 
+            <button
               onClick={() => setActiveTab('pratica')}
-              style={activeTab === 'pratica' ? { fontWeight: 'bold', borderBottom: '2px solid black' } : {}}
+              className={`tab-btn ${activeTab === 'pratica' ? 'active' : ''}`}
             >
               Prática
             </button>
           </div>
           <div>
-            <button 
+            <button
               onClick={() => {
                 localStorage.setItem('skipWelcome', 'true');
                 navigate('/');
               }}
-              style={{ 
-                padding: '5px 10px', 
-                backgroundColor: '#1E43B4', 
-                color: 'white', 
-                border: 'none', 
-                borderRadius: '4px', 
-                cursor: 'pointer',
-                fontSize: '14px'
-              }}
+              className="btn btn-ghost"
+              style={{ padding: '8px 14px' }}
             >
               Voltar ao Início
             </button>
@@ -329,22 +300,51 @@ useEffect(() => {
           <div>
             <h3>Teoria - Hash</h3>
             <p>Aprenda sobre os conceitos fundamentais de Hash.</p>
-            
-            <button 
-              onClick={() => setShowModuleOnboarding(true)}
-              style={{ 
-                padding: '10px 16px', 
-                backgroundColor: '#1E43B4', 
-                color: 'white', 
-                border: 'none', 
-                borderRadius: '4px', 
-                cursor: 'pointer',
-                marginTop: '15px',
-                fontSize: '16px'
+            <div
+              style={{
+                marginTop: 12,
+                border: '1px solid rgba(255,255,255,0.08)',
+                background: 'rgba(12, 22, 32, 0.6)',
+                borderRadius: 12,
+                padding: 16,
               }}
             >
-              Abrir Tutorial Guiado
-            </button>
+              <h4 style={{ marginBottom: 6 }}>{theoryPages[theoryPage].title}</h4>
+              {theoryPages[theoryPage].content}
+
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: 12 }}>
+                <button
+                  className="btn btn-ghost"
+                  onClick={prevTheory}
+                  disabled={theoryPage === 0}
+                  style={{ padding: '8px 14px' }}
+                >
+                  Anterior
+                </button>
+
+                <span style={{ color: '#a8b3c7' }}>
+                  Página {theoryPage + 1} de {theoryPages.length}
+                </span>
+
+                {theoryPage < theoryPages.length - 1 ? (
+                  <button
+                    className="btn btn-primary"
+                    onClick={nextTheory}
+                    style={{ padding: '8px 14px' }}
+                  >
+                    Próximo
+                  </button>
+                ) : (
+                  <button
+                    className="btn btn-primary"
+                    onClick={() => setActiveTab('quiz')}
+                    style={{ padding: '8px 14px' }}
+                  >
+                    Concluir Teoria
+                  </button>
+                )}
+              </div>
+            </div>
           </div>
         )}
 

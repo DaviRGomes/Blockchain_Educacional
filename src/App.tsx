@@ -19,20 +19,30 @@ function App() {
     setShowOnboarding(true)
   }, [])
   return (
-    <div>
-      <h1>Blockchain Educacional</h1>
-      <Routes>
-        <Route path="/" element={<ModulesList />} />
-        <Route path="/modules" element={<ModulesList />} />
-        <Route path="/intro-quiz" element={<IntroQuiz />} />
-        <Route path="/hash" element={<HashModule />} />
-        <Route path="/block" element={<BlockModule />} />
-        <Route path="/blockchain" element={<BlockchainModule />} />
-        <Route path="/final-quiz" element={<FinalQuiz />} />
-      </Routes>
-
-  {showOnboarding && <Onboarding onFinish={() => {setShowOnboarding(false)
-     navigate('/')}} />}
+    <div className="app-container">
+      <div className="content-container">
+        <h1 style={{ color: 'var(--text-white)', textAlign: 'center' }}>
+          Blockchain Educacional
+        </h1>
+        {/* Rotas principais – mantém ModulesList como página inicial */}
+        <Routes>
+          <Route path="/" element={<ModulesList />} />
+          <Route path="/modules" element={<ModulesList />} />
+          <Route path="/intro-quiz" element={<IntroQuiz />} />
+          <Route path="/hash" element={<HashModule />} />
+          <Route path="/block" element={<BlockModule />} />
+          <Route path="/blockchain" element={<BlockchainModule />} />
+          <Route path="/final-quiz" element={<FinalQuiz />} />
+        </Routes>
+        {showOnboarding && (
+          <Onboarding
+            onFinish={() => {
+              setShowOnboarding(false)
+              navigate('/')
+            }}
+          />
+        )}
+      </div>
     </div>
   )
 }

@@ -1,9 +1,100 @@
 import React, { useState, useMemo, useRef, useEffect } from 'react'
-import CryptoJS from 'crypto-js'
-import Quiz from './Quiz'
-import { blockchainQuestions } from '../data/quizBlockchain'
-import Onboarding from './Onboarding'
 import { useNavigate } from 'react-router-dom'
+import Quiz from '../components/Quiz' 
+import { blockchainQuestions as blockchainQuestionsData } from '../data/quizBlockchain'
+
+const simpleHash = (input: string) => {
+    // Gera 32 bytes pseudo-aleatórios (64 hex) a partir do input,
+    // garantindo distribuição suficiente para atender dificuldade por tentativa de nonce.
+    let seed = 0x811c9dc5
+    for (let i = 0; i < input.length; i++) {
+        seed ^= input.charCodeAt(i)
+        seed = (seed * 0x01000193) >>> 0
+    }
+    let x = seed >>> 0
+    const bytes = new Uint8Array(32)
+    for (let i = 0; i < 32; i++) {
+        // xorshift32
+        x ^= (x << 13) >>> 0
+        x ^= (x >>> 17) >>> 0
+        x ^= (x << 5) >>> 0
+        bytes[i] = x & 0xff
+    }
+    let hex = ''
+    for (let i = 0; i < bytes.length; i++) {
+        hex += bytes[i].toString(16).padStart(2, '0')
+    }
+    return hex
+}
+
+// Mock Quiz Component
+interface QuizProps {
+    title: string;
+    questions: any[];
+    onFinish: (score: number, total: number) => void;
+}
+// Mock Onboarding Component
+// Removido: componente Quiz “mock” que retornava null
+// Removido: componente Onboarding “mock” (mantemos apenas o tipo)
+
+interface OnboardingStep {
+    title: string;
+    content: JSX.Element;
+}
+interface OnboardingProps {
+    steps: OnboardingStep[];
+    onFinish: () => void;
+}
+const Onboarding: React.FC<OnboardingProps> = ({ steps, onFinish }) => {
+    const [currentStep, setCurrentStep] = useState(0);
+
+    const nextStep = () => {
+        if (currentStep < steps.length - 1) {
+            setCurrentStep(currentStep + 1);
+        } else {
+            onFinish();
+        }
+    };
+
+    return (
+        <div style={{ 
+            position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, 
+            background: 'rgba(0, 0, 0, 0.9)', zIndex: 10000, 
+            display: 'flex', justifyContent: 'center', alignItems: 'center'
+        }}>
+            <div style={{ 
+                width: '90%', maxWidth: 600, padding: 30, 
+                background: '#0d1117', borderRadius: 12, 
+                boxShadow: '0 8px 16px rgba(0,0,0,0.5)' 
+            }}>
+                <h3 style={{ color: '#58a6ff', marginBottom: 10 }}>{steps[currentStep].title}</h3>
+                <div style={{ color: '#eaf1f8', minHeight: 120 }}>
+                    {steps[currentStep].content}
+                </div>
+                <div style={{ marginTop: 20, display: 'flex', justifyContent: 'space-between' }}>
+                    <button 
+                        onClick={() => setCurrentStep(Math.max(0, currentStep - 1))} 
+                        disabled={currentStep === 0} 
+                        className="btn btn-ghost"
+                        style={{ padding: '8px 14px' }}
+                    >
+                        Anterior
+                    </button>
+                    <span style={{ color: '#a8b3c7' }}>
+                        Passo {currentStep + 1} de {steps.length}
+                    </span>
+                    <button 
+                        onClick={nextStep} 
+                        className="btn btn-primary"
+                        style={{ padding: '8px 14px' }}
+                    >
+                        {currentStep === steps.length - 1 ? 'Concluir' : 'Próximo'}
+                    </button>
+                </div>
+            </div>
+        </div>
+    );
+};
 
 
 // Função utilitária para embaralhar array usando algoritmo Fisher-Yates
@@ -31,7 +122,7 @@ function BlockchainModule() {
   const navigate = useNavigate()
 
   const randomTenQuestions = useMemo(() => {
-    const shuffled = shuffleArray(blockchainQuestions)
+    const shuffled = shuffleArray(blockchainQuestionsData)
     return shuffled.slice(0, 10)
   }, [])
 
@@ -40,20 +131,21 @@ function BlockchainModule() {
 
   const makeHash = (number: number, previousHash: string, data: string, nonce: number) => {
     const input = `${number}|${previousHash}|${data}|${nonce}`
-    return CryptoJS.SHA256(input).toString()
+    // Using the simplified hash function defined above to avoid the CryptoJS error
+    return simpleHash(input) 
   }
 
   const genesisPrevious = ''.padEnd(64, '0')
 
   const [chain, setChain] = useState<Block[]>(() => {
     const initial: Block[] = []
-    for (let i = 0; i < 5; i++) {
+    for (let i = 0; i < 3; i++) {
       const prev = i === 0 ? genesisPrevious : ''
       initial.push({
         index: i,
         number: i + 1,
         nonce: 0,
-        data: i === 0 ? 'Genesis Block' : `Bloco ${i + 1} de exemplo`,
+        data: `Bloco ${i + 1} de exemplo`,
         previousHash: prev,
         hash: ''
       })
@@ -99,7 +191,7 @@ function BlockchainModule() {
         next[i].nonce = nonce
         next[i].hash = hash
         recomputeFrom(i + 1, next)
-        if (i === 0 && step === 5) setStep(6)
+        if (i === 0 && (step === 5 || step === 4)) setStep(6)
         return
       }
       nonce++
@@ -109,35 +201,9 @@ function BlockchainModule() {
     recomputeFrom(i, next)
   }
 
-  const renderTeoria = () => (
-    <div>
-      <h3>Teoria</h3>
-      <p>
-        Uma blockchain é uma cadeia de blocos onde cada bloco contém seu próprio hash
-        e o hash do bloco anterior (<code>previousHash</code>). Qualquer alteração em um bloco
-        muda seu hash, invalidando os blocos seguintes. A “mineração” ajusta o nonce
-        para encontrar um hash que satisfaça o critério de dificuldade (por exemplo, iniciar
-        com <code>{difficulty}</code>).
-      </p>
-    </div>
-  )
 
-  const renderQuiz = () => (
-    <Quiz
-      title="Quiz: Blockchain"
-      questions={randomTenQuestions}
-      onFinish={(score: number, total: number) => {
-        try {
-          localStorage.setItem('blockchainCompleted', 'true')
-          localStorage.setItem('blockchainScore', String(score))
-          localStorage.setItem('blockchainTotal', String(total))
-        } catch {}
-      }}
-    />
-  )
 
   // TOUR PRÁTICO
-  const [practiceTourRequested, setPracticeTourRequested] = useState(false)
   const [step, setStep] = useState<number | null>(null)
   const timeoutsRef = useRef<number[]>([])
   const pushTimeout = (id: number) => timeoutsRef.current.push(id)
@@ -149,11 +215,11 @@ function BlockchainModule() {
   const [tooltipPos, setTooltipPos] = useState<{ top: number; left: number; placement: 'top'|'right'|'bottom'|'left' } | null>(null)
 
   useEffect(() => {
-    if (activeTab === 'pratica' && practiceTourRequested && step == null) {
+    if (activeTab === 'pratica' && step == null) {
       const id = window.setTimeout(() => setStep(1), 80)
       pushTimeout(id)
     }
-  }, [activeTab, practiceTourRequested, step])
+  }, [activeTab, step])
 
   useEffect(() => {
     if (step == null) { setTooltipPos(null); return }
@@ -181,24 +247,22 @@ function BlockchainModule() {
   }, [step, chain])
 
   useEffect(() => {
-  const autoSteps = [1, 2, 3, 4, 6, 7];
-  if (step == null) return;
-
-  // Limpa timeout antigo
-  timeoutsRef.current.forEach(clearTimeout);
-  timeoutsRef.current = [];
-
-  if (autoSteps.includes(step)) {
-    const timeoutId = window.setTimeout(() => {
-      setStep(prev => {
-        if (prev === 7) return prev;
-        return (prev ?? 0) + 1;
-      });
-    }, 4000); // tempo fixo para cada passo
-    pushTimeout(timeoutId);
-  }
-}, [step]);
-
+  // REMOVIDO: avanço automático por tempo
+  // useEffect(() => {
+  //   const autoSteps = [1, 2, 3, 4, 6, 7];
+  //   if (step == null) return;
+  //   timeoutsRef.current.forEach(clearTimeout);
+  //   timeoutsRef.current = [];
+  //   if (autoSteps.includes(step)) {
+  //     const timeoutId = window.setTimeout(() => {
+  //       setStep(prev => {
+  //         if (prev === 7) return prev;
+  //         return (prev ?? 0) + 1;
+  //       });
+  //     }, 4000);
+  //     pushTimeout(timeoutId);
+  //   }
+  }, [step]);
 
 
   useEffect(() => {
@@ -211,142 +275,146 @@ function BlockchainModule() {
   const renderPratica = () => (
     <div>
       <p>Dificuldade: hash deve começar com <code>{difficulty}</code>.</p>
-      <div style={{ display: 'grid', gap: 16 }}>
-        {chain.map((b, i) => (
-          <div
-            key={i}
-            ref={i === 0 ? firstBlockRef : undefined}
-            style={{
-              border: '1px solid #ccc',
-              padding: 16,
-              borderRadius: 8,
-              backgroundColor: '#f9f9f9'
-            }}
-          >
-            <div style={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              marginBottom: 12
-            }}>
-              <strong style={{ fontSize: 18 }}>Bloco #{b.number}</strong>
-              <span style={{
-                padding: '4px 8px',
-                borderRadius: 4,
-                backgroundColor: isValidHash(b.hash) ? '#e6f7e6' : '#ffebeb',
-                color: isValidHash(b.hash) ? '#2e7d32' : '#d32f2f',
-                fontWeight: 'bold'
-              }}>
-                {isValidHash(b.hash) ? '✅ Válido' : '❌ Inválido'}
-              </span>
+      <div style={{ display: 'grid', gap: 12 }}>
+        {chain.map((b, i) => {
+          const valid = isValidHash(b.hash)
+
+          const cardStyle = {
+            border: '1px solid rgba(255,255,255,0.08)',
+            padding: 16,
+            borderRadius: 12,
+            background: 'rgba(12, 22, 32, 0.6)',
+          } as const
+
+          const statusStyle = {
+            padding: '4px 8px',
+            borderRadius: 6,
+            backgroundColor: valid ? '#2e7d32' : '#d32f2f',
+            color: '#ffffff',
+            fontWeight: 'bold',
+          } as const
+
+          const baseInputStyle = {
+            width: '100%',
+            padding: 10,
+            fontSize: 14,
+            background: '#0d1117',
+            color: '#eaf1f8',
+            border: '1px solid #2e7d32',
+            borderRadius: 8,
+            outline: 'none',
+          } as const
+
+          const previousHashStyle = {
+            ...baseInputStyle,
+            fontFamily: 'monospace',
+            background: '#0a0f14',
+            color: '#9aa7b3',
+            border: '1px solid rgba(255,255,255,0.12)',
+            wordBreak: 'break-all',
+            whiteSpace: 'normal',
+          } as const
+
+          const hashInputStyle = {
+            ...baseInputStyle,
+            fontFamily: 'monospace',
+            border: valid ? '1px solid #2e7d32' : '1px solid #d32f2f',
+            background: valid ? '#0d2d23' : '#3d1616',
+            color: valid ? '#2e7d32' : '#d32f2f',
+            wordBreak: 'break-all',
+            whiteSpace: 'normal',
+          } as const
+
+          return (
+            <div
+              key={i}
+              ref={i === 0 ? firstBlockRef : undefined}
+              style={cardStyle}
+            >
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+                <strong style={{ fontSize: 18 }}>Bloco #{b.number}</strong>
+                <span style={statusStyle}>
+                  {valid ? 'Válido' : 'Inválido'}
+                </span>
+              </div>
+
+              <div style={{ display: 'grid', gap: 12 }}>
+                <div>
+                  <label style={{ display: 'block', marginBottom: 8 }}>Número:</label>
+                  <input
+                    type="number"
+                    value={b.number}
+                    onChange={(e) => handleFieldChange(i, 'number', e.target.value)}
+                    style={baseInputStyle}
+                  />
+                </div>
+
+                <div>
+                  <label style={{ display: 'block', marginBottom: 8 }}>Nonce:</label>
+                  <input
+                    type="number"
+                    value={b.nonce}
+                    onChange={(e) => handleFieldChange(i, 'nonce', e.target.value)}
+                    style={baseInputStyle}
+                  />
+                </div>
+
+                <div>
+                  <label style={{ display: 'block', marginBottom: 8 }}>Dados:</label>
+                  <input
+                    type="text"
+                    value={b.data}
+                    ref={i === 0 ? firstDataRef : undefined}
+                    onFocus={() => { if (i === 0 && step === 1) setStep(3) }}
+                    onChange={(e) => handleFieldChange(i, 'data', e.target.value)}
+                    style={baseInputStyle}
+                  />
+                </div>
+
+                <div>
+                  <label style={{ display: 'block', marginBottom: 8 }}>Hash Anterior:</label>
+                  <input
+                    type="text"
+                    value={b.previousHash}
+                    readOnly
+                    style={previousHashStyle}
+                  />
+                </div>
+
+                <div>
+                  <label style={{ display: 'block', marginBottom: 8 }}>Hash:</label>
+                  <input
+                    type="text"
+                    value={b.hash}
+                    ref={i === 0 ? firstHashRef : undefined}
+                    readOnly
+                    style={hashInputStyle}
+                  />
+                </div>
+              </div>
+
+              <div style={{ marginTop: 16 }}>
+                <button
+                  ref={i === 0 ? firstMineBtnRef : undefined}
+                  onMouseEnter={() => { if (i === 0 && step === 4) setStep(5) }}
+                  onClick={() => mineBlock(i)}
+                  className="btn btn-primary"
+                  style={{ padding: '8px 14px' }}
+                >
+                  Minerar
+                </button>
+              </div>
             </div>
-
-            <div style={{ display: 'grid', gap: 12 }}>
-              <div>
-                <label style={{ display: 'block', marginBottom: 8 }}>Número:</label>
-                <input
-                  type="number"
-                  value={b.number}
-                  onChange={(e) => handleFieldChange(i, 'number', e.target.value)}
-                  style={{ width: '100%', padding: 10, fontSize: 14 }}
-                />
-              </div>
-
-              <div>
-                <label style={{ display: 'block', marginBottom: 8 }}>Nonce:</label>
-                <input
-                  type="number"
-                  value={b.nonce}
-                  onChange={(e) => handleFieldChange(i, 'nonce', e.target.value)}
-                  style={{ width: '100%', padding: 10, fontSize: 14 }}
-                />
-              </div>
-
-              <div>
-                <label style={{ display: 'block', marginBottom: 8 }}>Dados:</label>
-                <input
-                  type="text"
-                  value={b.data}
-                  ref={i === 0 ? firstDataRef : undefined}
-                  onChange={(e) => handleFieldChange(i, 'data', e.target.value)}
-                  style={{ width: '100%', padding: 10, fontSize: 14 }}
-                />
-              </div>
-
-              <div>
-                <label style={{ display: 'block', marginBottom: 8 }}>Hash Anterior:</label>
-                <input
-                  type="text"
-                  value={b.previousHash}
-                  readOnly
-                  style={{ width: '100%', padding: 10, fontSize: 14, fontFamily: 'monospace' }}
-                />
-              </div>
-
-              <div>
-                <label style={{ display: 'block', marginBottom: 8 }}>Hash:</label>
-                <input
-                  type="text"
-                  value={b.hash}
-                  ref={i === 0 ? firstHashRef : undefined}
-                  readOnly
-                  style={{
-                    width: '100%',
-                    padding: 10,
-                    fontFamily: 'monospace',
-                    color: isValidHash(b.hash) ? '#2e7d32' : '#d32f2f'
-                  }}
-                />
-              </div>
-            </div>
-
-            <div style={{ marginTop: 16 }}>
-              <button
-                ref={i === 0 ? firstMineBtnRef : undefined}
-                onClick={() => mineBlock(i)}
-                style={{
-                  padding: '10px 14px',
-                  borderRadius: 8,
-                  backgroundColor: '#1E43B4',
-                  color: 'white',
-                  border: 'none',
-                  cursor: 'pointer',
-                  fontSize: 14
-                }}
-              >
-                Minerar este bloco
-              </button>
-            </div>
-          </div>
-        ))}
+          )
+        })}
       </div>
-
-      {/* Tooltip do tour prático */}
-      {tooltipPos && step != null && (
-        <div style={{
-          position: 'absolute',
-          top: tooltipPos.top,
-          left: tooltipPos.left,
-          width: 320,
-          padding: 16,
-          backgroundColor: 'white',
-          border: '1px solid #ccc',
-          borderRadius: 8,
-          boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
-          zIndex: 9999
-        }}>
-          {step === 1 && <p>Este é o primeiro bloco da blockchain.</p>}
-          {step === 3 && <p>Edite os dados para ver como o hash se altera.</p>}
-          {step === 4 && <p>O hash ficou inválido, veja a marcação vermelha.</p>}
-          {step === 5 && <p>Agora clique em "Minerar" para recalcular o hash corretamente.</p>}
-          {step === 6 && <p>O hash agora é válido. ✅</p>}
-          {step === 7 && <p>Tour concluído! Você já entende como a blockchain funciona na prática.</p>}
-        </div>
-      )}
     </div>
   )
 
-  const blockchainOnboardingSteps = [
+  // Teoria paginada usando os mesmos textos do Onboarding (Blockchain)
+  const [theoryPage, setTheoryPage] = useState(0)
+
+  const blockchainOnboardingSteps: OnboardingStep[] = [
     {
       title: 'O que é Blockchain?',
       content: (
@@ -410,59 +478,105 @@ function BlockchainModule() {
     }
   ]
 
+  // renderTeoria (NOVA VERSÃO PAGINADA)
+  const renderTeoria = () => {
+    const theoryPages = blockchainOnboardingSteps
+    const theoryTexts = [
+      'Uma blockchain é uma cadeia de blocos interligados que registra transações de forma segura e transparente. Cada bloco contém dados, um hash e o hash do bloco anterior. Alterações em um bloco invalidam toda a cadeia subsequente.',
+      'Cada bloco armazena o hash do bloco anterior, criando um encadeamento seguro. Isso garante integridade e imutabilidade, tornando quase impossível alterar blocos antigos sem recalcular toda a cadeia.',
+      'A segurança vem de três pilares: Hashes (cada bloco tem seu hash único), Proof of Work (mineração com esforço computacional) e Distribuição (replicação em múltiplos nós da rede).',
+      'Para adicionar um bloco, é necessário resolver um problema de mineração (ajustar nonce para hash válido). Todos os nós da rede devem concordar sobre a validade do bloco (consenso).',
+      'Imagine três blocos: alterar dados no primeiro muda todos os hashes subsequentes, invalidando a cadeia. Isso demonstra a segurança e imutabilidade da blockchain.',
+      'Boas práticas: não armazene dados sensíveis diretamente nos blocos; valide hashes e transações antes de adicionar blocos; use nós confiáveis para manter a integridade da cadeia.'
+    ]
+
+    const nextTheory = () => setTheoryPage((p) => Math.min(p + 1, theoryPages.length - 1))
+    const prevTheory = () => setTheoryPage((p) => Math.max(p - 1, 0))
+
+    return (
+      <div
+        style={{
+          marginTop: 12,
+          border: '1px solid rgba(255,255,255,0.08)',
+          background: 'rgba(12, 22, 32, 0.6)',
+          borderRadius: 12,
+          padding: 16,
+        }}
+      >
+        <h4 style={{ marginBottom: 6 }}>{theoryPages[theoryPage].title}</h4>
+        {theoryPages[theoryPage].content}
+
+      
+
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: 12 }}>
+          <button
+            onClick={prevTheory}
+            disabled={theoryPage === 0}
+            className="btn btn-ghost"
+            style={{ padding: '8px 14px' }}
+          >
+            Anterior
+          </button>
+
+          <span style={{ color: '#a8b3c7' }}>
+            Página {theoryPage + 1} de {theoryPages.length}
+          </span>
+
+          {theoryPage < theoryPages.length - 1 ? (
+            <button
+              onClick={nextTheory}
+              className="btn btn-primary"
+              style={{ padding: '8px 14px' }}
+            >
+              Próximo
+            </button>
+          ) : (
+            <button
+              onClick={() => setActiveTab('quiz')}
+              className="btn btn-primary"
+              style={{ padding: '8px 14px' }}
+            >
+              Concluir Teoria
+            </button>
+          )}
+        </div>
+      </div>
+    )
+  }
+
   return (
-    <div style={{ display: 'flex', justifyContent: 'center', padding: 24, position: 'relative' }}>
+    <div style={{ display: 'flex', justifyContent: 'center', padding: 24 }}>
       <div style={{ width: '100%', maxWidth: 820 }}>
         <h2 style={{ textAlign: 'center' }}>Módulo 3: Blockchain</h2>
-
-        {showModuleOnboarding && (
-          <Onboarding
-            steps={blockchainOnboardingSteps}
-            onFinish={() => {
-              try { localStorage.setItem('blockchainModuleOnboarding', 'true') } catch {}
-              setShowModuleOnboarding(false)
-              setActiveTab('quiz')
-            }}
-          />
-        )}
-
-        {/* BOTOES TEORIA | QUIZ | PRÁTICA */}
         <div style={{ marginBottom: 16, display: 'flex', justifyContent: 'space-between' }}>
-          <div>
-            <button 
+          <div className="tabs">
+            <button
               onClick={() => setActiveTab('teoria')}
-              style={activeTab === 'teoria' ? { fontWeight: 'bold', borderBottom: '2px solid black' } : {}}
+              className={`tab-btn ${activeTab === 'teoria' ? 'active' : ''}`}
             >
               Teoria
             </button>
-            <button 
+            <button
               onClick={() => setActiveTab('quiz')}
-              style={activeTab === 'quiz' ? { fontWeight: 'bold', borderBottom: '2px solid black' } : {}}
+              className={`tab-btn ${activeTab === 'quiz' ? 'active' : ''}`}
             >
               Quiz
             </button>
-            <button 
+            <button
               onClick={() => setActiveTab('pratica')}
-              style={activeTab === 'pratica' ? { fontWeight: 'bold', borderBottom: '2px solid black' } : {}}
+              className={`tab-btn ${activeTab === 'pratica' ? 'active' : ''}`}
             >
               Prática
             </button>
           </div>
           <div>
-            <button 
+             <button
               onClick={() => {
                 localStorage.setItem('skipWelcome', 'true');
                 navigate('/');
               }}
-              style={{ 
-                padding: '5px 10px', 
-                backgroundColor: '#1E43B4', 
-                color: 'white', 
-                border: 'none', 
-                borderRadius: '4px', 
-                cursor: 'pointer',
-                fontSize: '14px'
-              }}
+              className="btn btn-ghost"
+              style={{ padding: '8px 14px' }}
             >
               Voltar ao Início
             </button>
@@ -475,51 +589,54 @@ function BlockchainModule() {
           <div>
             <h3>Teoria - Blockchain</h3>
             <p>Aprenda sobre os conceitos fundamentais de Blockchain.</p>
-            
-            <button 
-              onClick={() => setShowModuleOnboarding(true)}
-              style={{ 
-                padding: '10px 16px', 
-                backgroundColor: '#1E43B4', 
-                color: 'white', 
-                border: 'none', 
-                borderRadius: '4px', 
-                cursor: 'pointer',
-                marginTop: '15px',
-                fontSize: '16px'
-              }}
-            >
-              Abrir Tutorial Guiado
-            </button>
-            
             {renderTeoria()}
           </div>
         )}
         {activeTab === 'quiz' && (
           <div>
             <h3>Quiz - Blockchain</h3>
-            {renderQuiz()}
+            <Quiz
+              questions={randomTenQuestions}
+              onFinish={(score: number, total: number) => {
+                try {
+                  localStorage.setItem('blockchainScore', String(score))
+                  localStorage.setItem('blockchainTotal', String(total))
+                  localStorage.setItem('blockchainCompleted', 'true')
+                } catch {}
+              }}
+            />
           </div>
         )}
         {activeTab === 'pratica' && (
           <div>
             <h3>Prática - Blockchain</h3>
-            <button
-              onClick={() => setPracticeTourRequested(true)}
-              style={{
-                padding: '10px 16px',
-                backgroundColor: '#1E43B4',
-                color: 'white',
-                border: 'none',
-                borderRadius: '4px',
-                cursor: 'pointer',
-                marginBottom: 12,
-                fontSize: 14
-              }}
-            >
-              Iniciar Tour Guiado
-            </button>
+            {/* Botão "Iniciar Tour Guiado" removido; tour inicia automaticamente */}
             {renderPratica()}
+
+            {tooltipPos && step != null && (
+              <div
+                style={{
+                  position: 'absolute',
+                  top: tooltipPos.top,
+                  left: tooltipPos.left,
+                  width: 320,
+                  padding: 16,
+                  background: 'rgba(12, 22, 32, 0.92)',
+                  color: '#eaf1f8',
+                  border: '1px solid rgba(255,255,255,0.08)',
+                  borderRadius: 12,
+                  boxShadow: '0 4px 12px rgba(0,0,0,0.25)',
+                  zIndex: 9999
+                }}
+              >
+                {step === 1 && <p>Este é o primeiro bloco da blockchain.</p>}
+                {step === 3 && <p>Edite os dados para ver como o hash se altera.</p>}
+                {step === 4 && <p>O hash ficou inválido, veja a marcação vermelha.</p>}
+                {step === 5 && <p>Agora clique em "Minerar" para recalcular o hash corretamente.</p>}
+                {step === 6 && <p>O hash agora é válido. ✅</p>}
+                {step === 7 && <p>Tour concluído! Você já entende como a blockchain funciona na prática.</p>}
+              </div>
+            )}
           </div>
         )}
       </div>

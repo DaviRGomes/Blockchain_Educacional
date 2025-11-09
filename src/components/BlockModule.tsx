@@ -24,6 +24,81 @@ function BlockModule() {
   const [data, setData] = useState('')
   const [step, setStep] = useState<number | null>(null) // guided tour step 1..7
 
+  // Teoria paginada usando os mesmos textos do Onboarding (Bloco)
+  const [theoryPage, setTheoryPage] = useState(0)
+  const blockTheorySteps = [
+    {
+      title: 'O que é um Bloco?',
+      content: (
+        <div>
+          <p>
+            Um bloco é a unidade que agrupa transações e metadados: número, nonce, dados e o hash (resultado da função hash sobre esses campos).
+          </p>
+          <p>
+            Cada bloco aponta para o hash do bloco anterior (previousHash). Esse link cria uma cadeia onde o histórico fica encadeado e fácil de verificar.
+          </p>
+          <p>
+            Exemplo simplificado: Bloco #2 contém previousHash = hash(Bloco #1). Se Bloco #1 mudar, Bloco #2 fica inconsistente.
+          </p>
+        </div>
+      )
+    },
+    {
+      title: 'Nonce e Mineração',
+      content: (
+        <div>
+          <p>
+            O <strong>nonce</strong> é um valor que ajustamos para mudar o hash do bloco. Mineração é o processo de tentar nonces até encontrar um hash que satisfaça a dificuldade.
+          </p>
+          <p>
+            Em sistemas reais, a dificuldade é ajustada para controlar o tempo médio de criação de blocos; aqui usamos um critério simples para demonstração.
+          </p>
+        </div>
+      )
+    },
+    {
+      title: 'Efeito Avalanche e Integridade',
+      content: (
+        <div>
+          <p>
+            Alterar qualquer campo (dados, nonce ou número) muda o hash completamente (efeito avalanche). Por isso, alterar um bloco invalida os seguintes — a cadeia perde consistência.
+          </p>
+          <p>
+            Para recuperar a consistência após uma alteração é necessário reminerar o bloco alterado e todos os subsequentes, o que torna ataques retroativos custosos.
+          </p>
+        </div>
+      )
+    },
+    {
+      title: 'Limitações e Performance',
+      content: (
+        <div>
+          <p>
+            A mineração é computacionalmente custosa. Neste módulo usamos uma simulação síncrona para demonstração; em sistemas reais, isso é feito por nós dedicados, pools e hardware especializado (ASICs/GPU).
+          </p>
+          <p>
+            Observação técnica: executar loops de força bruta no thread principal do navegador pode travar a interface; por isso, para provar conceitos maiores, use WebWorkers ou execute mineração em backend controlado.
+          </p>
+        </div>
+      )
+    },
+    {
+      title: 'Prática Recomendada',
+      content: (
+        <div>
+          <p>
+            Experimente alterar os dados do bloco e clicar em "Minerar" para ver como o nonce e o hash mudam. Observe a validade do bloco e como isso afeta os blocos seguintes.
+          </p>
+          <p>
+            Dica: altere apenas uma palavra e compare os hashes antes/depois — será visível a mudança completa (efeito avalanche).
+          </p>
+        </div>
+      )
+    }
+  ]
+  const theoryPages = blockTheorySteps
+  const nextTheory = () => setTheoryPage((p) => Math.min(p + 1, theoryPages.length - 1))
+  const prevTheory = () => setTheoryPage((p) => Math.max(p - 1, 0))
   const numberRef = useRef<HTMLInputElement | null>(null)
   const nonceRef = useRef<HTMLInputElement | null>(null)
   const dataRef = useRef<HTMLTextAreaElement | null>(null)
@@ -142,7 +217,50 @@ function BlockModule() {
   }
 
   const renderTeoria = () => (
-    <div>
+    <div
+      style={{
+        marginTop: 12,
+        border: '1px solid rgba(255,255,255,0.08)',
+        background: 'rgba(12, 22, 32, 0.6)',
+        borderRadius: 12,
+        padding: 16,
+      }}
+    >
+      <h4 style={{ marginBottom: 6 }}>{theoryPages[theoryPage].title}</h4>
+      {theoryPages[theoryPage].content}
+
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: 12 }}>
+        <button
+          onClick={prevTheory}
+          disabled={theoryPage === 0}
+          className="btn btn-ghost"
+          style={{ padding: '8px 14px' }}
+        >
+          Anterior
+        </button>
+
+        <span style={{ color: '#a8b3c7' }}>
+          Página {theoryPage + 1} de {theoryPages.length}
+        </span>
+
+        {theoryPage < theoryPages.length - 1 ? (
+          <button
+            onClick={nextTheory}
+            className="btn btn-primary"
+            style={{ padding: '8px 14px' }}
+          >
+            Próximo
+          </button>
+        ) : (
+          <button
+            onClick={() => setActiveTab('quiz')}
+            className="btn btn-primary"
+            style={{ padding: '8px 14px' }}
+          >
+            Concluir Teoria
+          </button>
+        )}
+      </div>
     </div>
   )
 
@@ -202,7 +320,8 @@ function BlockModule() {
           <button 
             ref={mineRef} 
             onClick={handleMine} 
-            style={{ padding: '10px 14px', borderRadius: 8 }}
+            className="btn btn-primary"
+            style={{ padding: '8px 14px' }}
           >
             Minerar
           </button>
@@ -326,104 +445,24 @@ function BlockModule() {
     <div style={{ display: 'flex', justifyContent: 'center', padding: 24 }}>
       <div style={{ width: '100%', maxWidth: 820 }}>
         <h2 style={{ textAlign: 'center' }}>Módulo 2: Blocos</h2>
-        {showModuleOnboarding && (
-          <Onboarding
-            onFinish={() => {
-              try { localStorage.setItem('blockModuleOnboarding', 'true') } catch {}
-              setShowModuleOnboarding(false)
-              setActiveTab('quiz')
-            }}
-            steps={[
-              {
-                title: 'O que é um Bloco?',
-                content: (
-                  <div>
-                    <p>
-                      Um bloco é a unidade que agrupa transações e metadados: número, nonce, dados e o hash (resultado da função hash sobre esses campos).
-                    </p>
-                    <p>
-                      Cada bloco aponta para o hash do bloco anterior (previousHash). Esse link cria uma cadeia onde o histórico fica encadeado e fácil de verificar.
-                    </p>
-                    <p>
-                      Exemplo simplificado: Bloco #2 contém previousHash = hash(Bloco #1). Se Bloco #1 mudar, Bloco #2 fica inconsistente.
-                    </p>
-                  </div>
-                )
-              },
-              {
-                title: 'Nonce e Mineração',
-                content: (
-                  <div>
-                    <p>
-                      O <strong>nonce</strong> é um valor que ajustamos para mudar o hash do bloco. Mineração é o processo de tentar nonces até encontrar um hash que satisfaça a dificuldade.
-                    </p>
-                    <p>
-                      Em sistemas reais, a dificuldade é ajustada para controlar o tempo médio de criação de blocos; aqui usamos um critério simples para demonstração.
-                    </p>
-                  </div>
-                )
-              },
-              {
-                title: 'Efeito Avalanche e Integridade',
-                content: (
-                  <div>
-                    <p>
-                      Alterar qualquer campo (dados, nonce ou número) muda o hash completamente (efeito avalanche). Por isso, alterar um bloco invalida os seguintes — a cadeia perde consistência.
-                    </p>
-                    <p>
-                      Para recuperar a consistência após uma alteração é necessário reminerar o bloco alterado e todos os subsequentes, o que torna ataques retroativos custosos.
-                    </p>
-                  </div>
-                )
-              },
-              {
-                title: 'Limitações e Performance',
-                content: (
-                  <div>
-                    <p>
-                      A mineração é computacionalmente custosa. Neste módulo usamos uma simulação síncrona para demonstração; em sistemas reais, isso é feito por nós dedicados, pools e hardware especializado (ASICs/GPU).
-                    </p>
-                    <p>
-                      Observação técnica: executar loops de força bruta no thread principal do navegador pode travar a interface; por isso, para provar conceitos maiores, use WebWorkers ou execute mineração em backend controlado.
-                    </p>
-                  </div>
-                )
-              },
-              {
-                title: 'Prática Recomendada',
-                content: (
-                  <div>
-                    <p>
-                      Experimente alterar os dados do bloco e clicar em "Minerar" para ver como o nonce e o hash mudam. Observe a validade do bloco e como isso afeta os blocos seguintes.
-                    </p>
-                    <p>
-                      Dica: altere apenas uma palavra e compare os hashes antes/depois — será visível a mudança completa (efeito avalanche).
-                    </p>
-                  </div>
-                )
-              }
-            ]}
-          />
-        )}
-
         {/* BOTOES TEORIA | QUIZ | PRÁTICA */}
         <div style={{ marginBottom: 16, display: 'flex', justifyContent: 'space-between' }}>
-          <div>
-            <button 
+          <div className="tabs">
+            <button
               onClick={() => setActiveTab('teoria')}
-              style={activeTab === 'teoria' ? { fontWeight: 'bold', borderBottom: '2px solid black' } : {}}
+              className={`tab-btn ${activeTab === 'teoria' ? 'active' : ''}`}
             >
               Teoria
             </button>
-            <button 
+            <button
               onClick={() => setActiveTab('quiz')}
-              style={activeTab === 'quiz' ? { fontWeight: 'bold', borderBottom: '2px solid black' } : {}}
+              className={`tab-btn ${activeTab === 'quiz' ? 'active' : ''}`}
             >
               Quiz
             </button>
-            <button 
+            <button
               onClick={() => setActiveTab('pratica')}
-              style={activeTab === 'pratica' ? { fontWeight: 'bold', borderBottom: '2px solid black' } : {}}
+              className={`tab-btn ${activeTab === 'pratica' ? 'active' : ''}`}
             >
               Prática
             </button>
@@ -434,15 +473,8 @@ function BlockModule() {
                 localStorage.setItem('skipWelcome', 'true');
                 navigate('/');
               }}
-              style={{ 
-                padding: '5px 10px', 
-                backgroundColor: '#1E43B4', 
-                color: 'white', 
-                border: 'none', 
-                borderRadius: '4px', 
-                cursor: 'pointer',
-                fontSize: '14px'
-              }}
+              className="btn btn-ghost"
+              style={{ padding: '8px 14px' }}
             >
               Voltar ao Início
             </button>
@@ -455,22 +487,9 @@ function BlockModule() {
           <div>
             <h3>Teoria - Blocos</h3>
             <p>Aprenda sobre os conceitos fundamentais de Blocos na Blockchain.</p>
-            
-            <button 
-              onClick={() => setShowModuleOnboarding(true)}
-              style={{ 
-                padding: '10px 16px', 
-                backgroundColor: '#1E43B4', 
-                color: 'white', 
-                border: 'none', 
-                borderRadius: '4px', 
-                cursor: 'pointer',
-                marginTop: '15px',
-                fontSize: '16px'
-              }}
-            >
-              Abrir Tutorial Guiado
-            </button>
+
+            {/* Botão "Abrir Tutorial Guiado" removido */}
+            {renderTeoria()}
           </div>
         )}
 
