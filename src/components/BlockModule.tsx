@@ -283,8 +283,9 @@ function BlockModule() {
       <h3>Prática - Bloco com SHA256 e Mineração</h3>
       <div style={{ display: 'grid', gap: 12 }}>
         <div>
-          <label style={{ display: 'block', marginBottom: 8 }}>Número:</label>
+          <label htmlFor="block-number" style={{ display: 'block', marginBottom: 8 }}>Número:</label>
           <input 
+            id="block-number"
             ref={numberRef} 
             type="number" 
             value={number} 
@@ -294,8 +295,9 @@ function BlockModule() {
         </div>
         
         <div>
-          <label style={{ display: 'block', marginBottom: 8 }}>Nonce:</label>
+          <label htmlFor="block-nonce" style={{ display: 'block', marginBottom: 8 }}>Nonce:</label>
           <input 
+            id="block-nonce"
             ref={nonceRef} 
             type="number" 
             value={nonce} 
@@ -305,8 +307,9 @@ function BlockModule() {
         </div>
         
         <div>
-          <label style={{ display: 'block', marginBottom: 8 }}>Dados:</label>
+          <label htmlFor="block-data" style={{ display: 'block', marginBottom: 8 }}>Dados:</label>
           <textarea 
+            id="block-data"
             ref={dataRef} 
             value={data} 
             onChange={(e) => handleDataChange(e.target.value)} 
@@ -328,8 +331,9 @@ function BlockModule() {
         </div>
 
         <div>
-          <label style={{ display: 'block', marginBottom: 8 }}>Hash (SHA256):</label>
+          <label htmlFor="block-hash" style={{ display: 'block', marginBottom: 8 }}>Hash (SHA256):</label>
           <input 
+            id="block-hash"
             ref={hashRef} 
             readOnly 
             value={hash} 

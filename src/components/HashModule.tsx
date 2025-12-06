@@ -371,8 +371,9 @@ useEffect(() => {
             <h3>Prática - Hash</h3>
             <div style={{ display: 'grid', gap: 12 }}>
               <div>
-                <label style={{ display: 'block', marginBottom: 8 }}>Texto:</label>
+                <label htmlFor="text-input" style={{ display: 'block', marginBottom: 8 }}>Texto:</label>
                 <textarea
+                  id="text-input"
                   ref={textareaRef}
                   value={text}
                   onChange={(e) => handleTextChange(e.target.value)}
@@ -389,8 +390,8 @@ useEffect(() => {
               </div>
 
               <div>
-                <label style={{ display: 'block', marginBottom: 8 }}>Hash (SHA256):</label>
-                <input ref={hashRef} readOnly value={hash} style={{ width: '100%', padding: 10, fontFamily: 'monospace' }} />
+                <label htmlFor="hash-output" style={{ display: 'block', marginBottom: 8 }}>Hash (SHA256):</label>
+                <input id="hash-output" ref={hashRef} readOnly value={hash} style={{ width: '100%', padding: 10, fontFamily: 'monospace' }} />
               </div>
             </div>
             

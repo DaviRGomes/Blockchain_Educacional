@@ -340,8 +340,9 @@ function BlockchainModule() {
 
               <div style={{ display: 'grid', gap: 12 }}>
                 <div>
-                  <label style={{ display: 'block', marginBottom: 8 }}>Número:</label>
+                  <label htmlFor={`bc-number-${i}`} style={{ display: 'block', marginBottom: 8 }}>Número:</label>
                   <input
+                    id={`bc-number-${i}`}
                     type="number"
                     value={b.number}
                     onChange={(e) => handleFieldChange(i, 'number', e.target.value)}
@@ -350,8 +351,9 @@ function BlockchainModule() {
                 </div>
 
                 <div>
-                  <label style={{ display: 'block', marginBottom: 8 }}>Nonce:</label>
+                  <label htmlFor={`bc-nonce-${i}`} style={{ display: 'block', marginBottom: 8 }}>Nonce:</label>
                   <input
+                    id={`bc-nonce-${i}`}
                     type="number"
                     value={b.nonce}
                     onChange={(e) => handleFieldChange(i, 'nonce', e.target.value)}
@@ -360,8 +362,9 @@ function BlockchainModule() {
                 </div>
 
                 <div>
-                  <label style={{ display: 'block', marginBottom: 8 }}>Dados:</label>
+                  <label htmlFor={`bc-data-${i}`} style={{ display: 'block', marginBottom: 8 }}>Dados:</label>
                   <input
+                    id={`bc-data-${i}`}
                     type="text"
                     value={b.data}
                     ref={i === 0 ? firstDataRef : undefined}
@@ -372,8 +375,9 @@ function BlockchainModule() {
                 </div>
 
                 <div>
-                  <label style={{ display: 'block', marginBottom: 8 }}>Hash Anterior:</label>
+                  <label htmlFor={`bc-phash-${i}`} style={{ display: 'block', marginBottom: 8 }}>Hash Anterior:</label>
                   <input
+                    id={`bc-phash-${i}`}
                     type="text"
                     value={b.previousHash}
                     readOnly
@@ -382,8 +386,9 @@ function BlockchainModule() {
                 </div>
 
                 <div>
-                  <label style={{ display: 'block', marginBottom: 8 }}>Hash:</label>
+                  <label htmlFor={`bc-hash-${i}`} style={{ display: 'block', marginBottom: 8 }}>Hash:</label>
                   <input
+                    id={`bc-hash-${i}`}
                     type="text"
                     value={b.hash}
                     ref={i === 0 ? firstHashRef : undefined}
